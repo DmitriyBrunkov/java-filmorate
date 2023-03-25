@@ -38,7 +38,9 @@ public class UserControllerTests {
                 .build();
         userController.add(user);
         for (User userFromCollection : userController.getAll()) {
-            assertEquals(user, userFromCollection);
+            if (userFromCollection.getId().equals(user.getId())) {
+                assertEquals(user, userFromCollection);
+            }
         }
     }
 

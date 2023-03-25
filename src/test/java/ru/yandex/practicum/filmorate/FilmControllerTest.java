@@ -7,9 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.validation.DataBinder;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -42,7 +40,9 @@ public class FilmControllerTest {
                 .build();
         filmController.add(film);
         for (Film filmFromCollection : filmController.getAll()) {
-            Assertions.assertEquals(film, filmFromCollection);
+            if (filmFromCollection.getId().equals(film.getId())) {
+                Assertions.assertEquals(film, filmFromCollection);
+            }
         }
     }
 
