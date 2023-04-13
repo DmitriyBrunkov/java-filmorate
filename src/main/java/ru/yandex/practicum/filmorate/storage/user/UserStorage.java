@@ -8,11 +8,18 @@ import java.util.Collection;
 
 public interface UserStorage {
     Collection<User> getAll();
+
     User get(Integer id) throws UserNotFoundException;
+
     void add(User user);
+
     void addFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException;
+
     void deleteFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException;
+
     Collection<Integer> getFriends(Integer id) throws UserValidationException;
+
     void update(User user) throws UserNotFoundException;
+
     boolean contains(Integer id);
 }

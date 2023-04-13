@@ -33,6 +33,7 @@ public class UserService {
     public void update(User user) throws UserNotFoundException {
         userStorage.update(user);
     }
+
     public void addFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException {
         userStorage.addFriend(userId, friendId);
         userStorage.addFriend(friendId, userId);
@@ -45,7 +46,7 @@ public class UserService {
 
     public Collection<User> getFriends(Integer id) throws UserValidationException, UserNotFoundException {
         Collection<User> result = new TreeSet<>(Comparator.comparing(User::getId));
-        for (Integer i: userStorage.getFriends(id)) {
+        for (Integer i : userStorage.getFriends(id)) {
             result.add(userStorage.get(i));
         }
         return result;

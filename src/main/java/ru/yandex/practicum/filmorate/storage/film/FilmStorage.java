@@ -9,9 +9,14 @@ import java.util.Collection;
 
 public interface FilmStorage {
     Collection<Film> getAll();
+
     Film get(Integer id) throws FilmNotFoundException;
+
     void put(Film film);
+
     void update(Film film) throws FilmValidationException, FilmNotFoundException;
+
     void addLike(Integer filmId, Integer userId) throws FilmValidationException;
+
     void deleteLike(Integer filmId, Integer userId) throws FilmValidationException, FilmNotFoundException, UserNotFoundException;
 }
