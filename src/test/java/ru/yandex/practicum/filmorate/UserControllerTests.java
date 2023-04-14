@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.validation.DataBinder;
 import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ConstraintViolation;
@@ -30,12 +30,11 @@ public class UserControllerTests {
 
     @Test
     public void shouldAddUser() {
-        User user = User.builder()
-                .login("dolore")
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
+        User user = new User();
+        user.setLogin("dolore");
+        user.setName("Nick Name");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
         userController.add(user);
         for (User userFromCollection : userController.getAll()) {
             if (userFromCollection.getId().equals(user.getId())) {
@@ -46,25 +45,23 @@ public class UserControllerTests {
 
     @Test
     public void shouldSubstituteNameWithLoginWhenNameIsEmpty() {
-        User user = User.builder()
-                .login("dolore")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
+        User user = new User();
+        user.setLogin("dolore");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
         userController.add(user);
         assertEquals(user.getName(), user.getLogin());
     }
 
     @Test
     public void shouldThrowExceptionWhenPutNonExistentId() {
-        User user = User.builder()
-                .id(1234)
-                .login("dolore")
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
-        final UserValidationException exception = assertThrows(UserValidationException.class,
+        User user = new User();
+        user.setId(1234);
+        user.setLogin("dolore");
+        user.setName("Nick Name");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
+        final UserNotFoundException exception = assertThrows(UserNotFoundException.class,
                 () -> userController.put(user)
         );
         assertEquals("ID: " + user.getId() + " doesn't exist", exception.getMessage());
@@ -72,12 +69,11 @@ public class UserControllerTests {
 
     @Test
     public void shouldThrowExceptionWhenWrongEmail() {
-        User user = User.builder()
-                .login("dolore")
-                .name("Nick Name")
-                .email("mail!mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
+        User user = new User();
+        user.setLogin("dolore");
+        user.setName("Nick Name");
+        user.setEmail("mail!mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
         final DataBinder dataBinder = new DataBinder(user);
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
@@ -85,11 +81,10 @@ public class UserControllerTests {
 
     @Test
     public void shouldThrowExceptionWhenLoginIsNull() {
-        User user = User.builder()
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
+        User user = new User();
+        user.setName("Nick Name");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
         final DataBinder dataBinder = new DataBinder(user);
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
@@ -97,12 +92,11 @@ public class UserControllerTests {
 
     @Test
     public void shouldThrowExceptionWhenLoginHasSpace() {
-        User user = User.builder()
-                .login("dol ore")
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
+        User user = new User();
+        user.setLogin("dol ore");
+        user.setName("Nick Name");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
         final DataBinder dataBinder = new DataBinder(user);
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
@@ -110,12 +104,11 @@ public class UserControllerTests {
 
     @Test
     public void shouldThrowExceptionWhenBirthdayIsInFuture() {
-        User user = User.builder()
-                .login("dolore")
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(3023, 8, 20))
-                .build();
+        User user = new User();
+        user.setLogin("dolore");
+        user.setName("Nick Name");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(3023, 8, 20));
         final DataBinder dataBinder = new DataBinder(user);
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());

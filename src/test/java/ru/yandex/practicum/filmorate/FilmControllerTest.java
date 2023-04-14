@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.validation.DataBinder;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.ConstraintViolation;
@@ -32,12 +32,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldAddFilm() {
-        Film film = Film.builder()
-                .name("Pulp Fiction")
-                .description("adipisicing")
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .duration(100)
-                .build();
+        Film film = new Film();
+        film.setName("Pulp Fiction");
+        film.setDescription("adipisicing");
+        film.setReleaseDate(LocalDate.of(1967, 3, 25));
+        film.setDuration(100);
         filmController.add(film);
         for (Film filmFromCollection : filmController.getAll()) {
             if (filmFromCollection.getId().equals(film.getId())) {
@@ -48,14 +47,13 @@ public class FilmControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenPutNonExistentId() {
-        Film film = Film.builder()
-                .id(1234)
-                .name("Pulp Fiction")
-                .description("adipisicing")
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .duration(100)
-                .build();
-        final FilmValidationException exception = assertThrows(FilmValidationException.class,
+        Film film = new Film();
+        film.setId(1234);
+        film.setName("Pulp Fiction");
+        film.setDescription("adipisicing");
+        film.setReleaseDate(LocalDate.of(1967, 3, 25));
+        film.setDuration(100);
+        final FilmNotFoundException exception = assertThrows(FilmNotFoundException.class,
                 () -> filmController.put(film)
         );
         assertEquals("ID: " + film.getId() + " doesn't exist", exception.getMessage());
@@ -63,12 +61,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenNameIsBlank() {
-        Film film = Film.builder()
-                .name("")
-                .description("adipisicing")
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .duration(100)
-                .build();
+        Film film = new Film();
+        film.setName("");
+        film.setDescription("adipisicing");
+        film.setReleaseDate(LocalDate.of(1967, 3, 25));
+        film.setDuration(100);
         final DataBinder dataBinder = new DataBinder(film);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
@@ -76,12 +73,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenDescriptionIsMore200Chars() {
-        Film film = Film.builder()
-                .name("Pulp Fiction")
-                .description("Pulp Fiction".repeat(200))
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .duration(100)
-                .build();
+        Film film = new Film();
+        film.setName("Pulp Fiction");
+        film.setDescription("Pulp Fiction".repeat(200));
+        film.setReleaseDate(LocalDate.of(1967, 3, 25));
+        film.setDuration(100);
         final DataBinder dataBinder = new DataBinder(film);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
@@ -89,12 +85,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenReleaseIsBeforeFirstFilmEver() {
-        Film film = Film.builder()
-                .name("Pulp Fiction")
-                .description("Pulp Fiction")
-                .releaseDate(LocalDate.of(967, 3, 25))
-                .duration(100)
-                .build();
+        Film film = new Film();
+        film.setName("Pulp Fiction");
+        film.setDescription("Pulp Fiction");
+        film.setReleaseDate(LocalDate.of(967, 3, 25));
+        film.setDuration(100);
         final DataBinder dataBinder = new DataBinder(film);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
@@ -102,12 +97,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenDurationIsNegative() {
-        Film film = Film.builder()
-                .name("Pulp Fiction")
-                .description("Pulp Fiction")
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .duration(-100)
-                .build();
+        Film film = new Film();
+        film.setName("Pulp Fiction");
+        film.setDescription("Pulp Fiction");
+        film.setReleaseDate(LocalDate.of(1967, 3, 25));
+        film.setDuration(-100);
         final DataBinder dataBinder = new DataBinder(film);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
