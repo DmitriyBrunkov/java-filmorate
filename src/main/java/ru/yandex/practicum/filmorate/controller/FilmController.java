@@ -51,11 +51,13 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) throws FilmValidationException {
         filmService.addLike(filmId, userId);
+        log.info("User {} liked film {}", userId, filmId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable("id") Integer filmId, @PathVariable("userId") Integer userId) throws FilmValidationException, FilmNotFoundException, UserNotFoundException {
         filmService.deleteLike(filmId, userId);
+        log.info("User {} deleted like from film {}", userId, filmId);
     }
 
     @GetMapping("/popular")
