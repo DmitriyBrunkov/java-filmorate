@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Component("InMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private static int currentId = 1;
     private final Map<Integer, User> users = new HashMap<>();
@@ -74,8 +74,8 @@ public class InMemoryUserStorage implements UserStorage {
         users.put(user.getId(), user);
     }
 
-    @Override
-    public boolean contains(Integer id) {
+    //@Override
+    private boolean contains(Integer id) {
         return users.containsKey(id);
     }
 

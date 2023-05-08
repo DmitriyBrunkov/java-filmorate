@@ -29,18 +29,20 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User get(@PathVariable("id") Integer id) throws UserNotFoundException {
+    public User get(@PathVariable("id") Integer id) throws UserNotFoundException, UserValidationException {
         return userService.get(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") Integer userId, @PathVariable("friendId") Integer friendId) throws UserValidationException, UserNotFoundException {
         userService.addFriend(userId, friendId);
+        log.info("User " + friendId + " sent invite to " + userId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable("id") Integer userId, @PathVariable("friendId") Integer friendId) throws UserValidationException, UserNotFoundException {
         userService.deleteFriend(userId, friendId);
+        log.info("User " + friendId + " deleted friend " + userId);
     }
 
     @GetMapping("/{id}/friends")

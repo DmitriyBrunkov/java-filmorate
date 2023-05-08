@@ -20,7 +20,7 @@ import java.util.Objects;
 
 @Component("UserDbStorage")
 public class UserDbStorage implements UserStorage {
-    private enum status {pending, confirmed}
+    private enum Status { pending, confirmed }
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -71,13 +71,13 @@ public class UserDbStorage implements UserStorage {
         }
         SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(UserQueries.GET_USERS_FRIENDSHIP_STATUS, friendId, userId);
         if (friendsRows.next()) {
-            if (friendsRows.getString("status").equals(status.pending.name())) {
-                jdbcTemplate.update(UserQueries.UPDATE_FRIEND_STATUS, friendId, userId, status.confirmed.name());
+            if (friendsRows.getString("status").equals(Status.pending.name())) {
+                jdbcTemplate.update(UserQueries.UPDATE_FRIEND_STATUS, friendId, userId, Status.confirmed.name());
             }
         } else {
             friendsRows = jdbcTemplate.queryForRowSet(UserQueries.GET_USERS_FRIENDSHIP_STATUS, userId, friendId);
             if (!friendsRows.next()) {
-                jdbcTemplate.update(UserQueries.ADD_FRIEND, userId, friendId, status.pending.name());
+                jdbcTemplate.update(UserQueries.ADD_FRIEND, userId, friendId, Status.pending.name());
             }
         }
 
