@@ -22,12 +22,12 @@ CREATE TABLE IF NOT EXISTS genre_names_default
 );
 
 INSERT INTO genre_names_default (GENRE_ID, NAME)
-VALUES (1, 'Комедия'),
-       (2, 'Драма'),
-       (3, 'Мультфильм'),
-       (4, 'Триллер'),
-       (5, 'Документальный'),
-       (6, 'Боевик');
+VALUES (1, 'РљРѕРјРµРґРёСЏ'),
+       (2, 'Р”СЂР°РјР°'),
+       (3, 'РњСѓР»СЊС‚С„РёР»СЊРј'),
+       (4, 'РўСЂРёР»Р»РµСЂ'),
+       (5, 'Р”РѕРєСѓРјРµРЅС‚Р°Р»СЊРЅС‹Р№'),
+       (6, 'Р‘РѕРµРІРёРє');
 
 merge into MPA as target using mpa_default as source
 on source.mpa_id = target.MPA_ID
