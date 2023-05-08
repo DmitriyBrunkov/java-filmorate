@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component("InMemoryFilmStorage")
+@Component
 public class InMemoryFilmStorage implements FilmStorage {
     private static int currentId = 1;
     private final Map<Integer, Film> films = new HashMap<>();

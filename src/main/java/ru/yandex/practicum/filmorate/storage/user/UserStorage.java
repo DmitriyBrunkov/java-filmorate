@@ -9,7 +9,7 @@ import java.util.Collection;
 public interface UserStorage {
     Collection<User> getAll();
 
-    User get(Integer id) throws UserNotFoundException, UserValidationException;
+    User get(Integer id) throws UserNotFoundException;
 
     void add(User user);
 
@@ -20,4 +20,6 @@ public interface UserStorage {
     Collection<Integer> getFriends(Integer id) throws UserValidationException;
 
     void update(User user) throws UserNotFoundException;
+
+    boolean contains(Integer id);
 }

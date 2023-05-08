@@ -9,7 +9,6 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Data
 public class Film {
@@ -23,7 +22,5 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
-    private Mpa mpa;
     private Set<Integer> likes = new HashSet<>();
-    private Set<Genre> genres = new TreeSet<>();
 }
