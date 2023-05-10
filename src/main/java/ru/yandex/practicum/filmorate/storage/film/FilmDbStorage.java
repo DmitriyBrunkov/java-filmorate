@@ -34,7 +34,16 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
     @Override
     public Collection<Film> getAll() {
         genres = getGenres();
-        return jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilm);
+        Collection<Film> films = jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilmWoGenres);
+        SqlRowSet filmGenreRow = jdbcTemplate.queryForRowSet(GenreQueries.GET_ALL_FILM_GENRES);
+        while (filmGenreRow.next()) {
+            Genre genre = new Genre();
+            genre.setId(filmGenreRow.getInt("genre_id"));
+            genre.setName(filmGenreRow.getString("name"));
+            films.stream().filter(f -> f.getId().equals(filmGenreRow.getInt("film_id"))).findAny().get()
+                    .getGenres().add(genre);
+        }
+        return films;
     }
 
     @Override
@@ -128,6 +137,21 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             filmGenres.add(genres.stream().filter(g -> g.getId().equals(i)).findAny().get());
         }
         film.setGenres(filmGenres);
+        return film;
+    }
+
+    private Film mapRowToFilmWoGenres(ResultSet resultSet, int rowNum) throws SQLException {
+        Film film = new Film();
+        film.setId(resultSet.getInt("film_id"));
+        film.setName(resultSet.getString("name"));
+        film.setDescription(resultSet.getString("description"));
+        film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
+        film.setDuration(resultSet.getInt("duration"));
+        Mpa mpa = new Mpa();
+        mpa.setId(resultSet.getInt("films.mpa_id"));
+        mpa.setName(resultSet.getString("mpa.name"));
+        film.setMpa(mpa);
+        film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES, (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
         return film;
     }
 
