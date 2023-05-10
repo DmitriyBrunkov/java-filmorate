@@ -37,7 +37,7 @@ public class FilmControllerTest {
         film.setDescription("adipisicing");
         film.setReleaseDate(LocalDate.of(1967, 3, 25));
         film.setDuration(100);
-        Film getFilm =  filmController.add(film);
+        Film getFilm = filmController.add(film);
         Assertions.assertEquals(film.getId(), getFilm.getId());
         Assertions.assertEquals(film.getName(), getFilm.getName());
     }

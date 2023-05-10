@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user.queries;
 
 public final class UserQueries {
-    public static final String GET_ALL_USERS = "select * from users";
-    public static final String GET_USER_BY_ID = "select * from users where user_id = ?";
+    public static final String GET_ALL_USERS = "select USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY from users";
+    public static final String GET_USER_BY_ID = "select USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY from users where user_id = ?";
     public static final String GET_USER_FRIENDS = "select FRIEND_ID from FRIENDS where USER_ID = ? " +
             "union select USER_ID from FRIENDS where FRIEND_ID = ? and STATUS = 'confirmed'";
     public static final String ADD_USER = "insert into users (email, login, name, birthday) values (?, ?, ?, ?)";

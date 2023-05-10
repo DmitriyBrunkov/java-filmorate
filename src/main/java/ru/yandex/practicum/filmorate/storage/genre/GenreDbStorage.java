@@ -5,6 +5,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.queries.GenreQueries;
 
 import java.sql.ResultSet;
@@ -12,12 +13,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
-public class GenreDbStorage implements GenreStorage {
-
-    private final JdbcTemplate jdbcTemplate;
+public class GenreDbStorage extends DbStorage implements GenreStorage {
 
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
     }
 
     @Override

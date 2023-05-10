@@ -15,6 +15,7 @@
 	<description>A service that will work with movies and user ratings, as well as return the top 5 movies recommended for viewing</description>
 	<properties>
 		<java.version>11</java.version>
+		<spring-boot.run.jvmArguments>-Dfile.encoding=UTF-8</spring-boot.run.jvmArguments>
 	</properties>
 	<dependencies>
 		<dependency>

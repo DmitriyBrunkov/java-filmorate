@@ -5,6 +5,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.queries.MpaQueries;
 
 import java.sql.ResultSet;
@@ -12,12 +13,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Component
-public class MpaDbStorage implements MpaStorage {
-
-    private final JdbcTemplate jdbcTemplate;
+public class MpaDbStorage extends DbStorage implements MpaStorage {
 
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
     }
 
     @Override

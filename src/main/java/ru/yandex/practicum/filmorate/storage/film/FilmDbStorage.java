@@ -11,28 +11,29 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.film.queries.FilmQueries;
+import ru.yandex.practicum.filmorate.storage.genre.queries.GenreQueries;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.TreeSet;
+import java.util.*;
+
 
 @Component("FilmDbStorage")
-public class FilmDbStorage implements FilmStorage {
-
-    private final JdbcTemplate jdbcTemplate;
+public class FilmDbStorage extends DbStorage implements FilmStorage {
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
     }
+
+    private Set<Genre> genres = new TreeSet<>();
 
     @Override
     public Collection<Film> getAll() {
+        genres = getGenres();
         return jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilm);
     }
 
@@ -41,6 +42,7 @@ public class FilmDbStorage implements FilmStorage {
         if (!contains(id)) {
             throw new FilmNotFoundException("ID: " + id + " doesn't exist");
         }
+        genres = getGenres();
         return jdbcTemplate.queryForObject(FilmQueries.GET_FILM_BY_ID_WITH_MPA_NAMES, this::mapRowToFilm, id);
     }
 
@@ -120,14 +122,23 @@ public class FilmDbStorage implements FilmStorage {
         mpa.setName(resultSet.getString("mpa.name"));
         film.setMpa(mpa);
         film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES, (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
-        film.setGenres(new TreeSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_GENRES, this::mapRowToGenre, film.getId())));
+        Set<Integer> filmGenresId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_GENRES_ID, (rs, rowNumber) -> rs.getInt("genre_id"), film.getId()));
+        Set<Genre> filmGenres = new TreeSet<>();
+        for (Integer i : filmGenresId) {
+            filmGenres.add(genres.stream().filter(g -> g.getId().equals(i)).findAny().get());
+        }
+        film.setGenres(filmGenres);
         return film;
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
         Genre genre = new Genre();
-        genre.setId(resultSet.getInt("genres.genre_id"));
+        genre.setId(resultSet.getInt("genre_id"));
         genre.setName(resultSet.getString("name"));
         return genre;
+    }
+
+    private Set<Genre> getGenres() {
+        return new TreeSet<>(jdbcTemplate.query(GenreQueries.GET_ALL_GENRES, this::mapRowToGenre));
     }
 }

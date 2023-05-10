@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.user.queries.UserQueries;
 
 import java.sql.Date;
@@ -19,13 +20,11 @@ import java.util.HashSet;
 import java.util.Objects;
 
 @Component("UserDbStorage")
-public class UserDbStorage implements UserStorage {
-    private enum Status { pending, confirmed }
-
-    private final JdbcTemplate jdbcTemplate;
+public class UserDbStorage extends DbStorage implements UserStorage {
+    private enum Status {pending, confirmed}
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        super(jdbcTemplate);
     }
 
     @Override
