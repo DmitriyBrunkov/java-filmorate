@@ -1,9 +1,10 @@
 # Filmorate
+
 Film rating app with user control
 
 ER-diagram:
 <picture>    
-    <img alt="Shows an illustrated sun in light mode and a moon with stars in dark mode." src="src/main/resources/filmorate_er_diagram.png">
+<img alt="Shows an illustrated sun in light mode and a moon with stars in dark mode." src="src/main/resources/filmorate_er_diagram.png">
 </picture>
 
 Request examples:
@@ -23,7 +24,9 @@ WHERE id IN (SELECT friend_id
              WHERE friend_id=request_id)
              AND status='confirmed');
 ```
+
 Get rating of all comedy:
+
 ```
 SELECT name,
        rt.name

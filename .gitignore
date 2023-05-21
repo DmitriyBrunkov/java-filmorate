@@ -6,6 +6,8 @@ target/
 .mvn
 mvnw
 mvnw.cmd
+checkstyle.xml
+suppressions.xml
 
 ### STS ###
 .apt_generated
