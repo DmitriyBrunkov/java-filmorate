@@ -33,4 +33,5 @@ public final class FilmQueries {
             " left outer join films_director as fd on films.film_id = fd.film_id left outer join directors as d" +
             " on fd.director_id = d.director_id left outer join likes on films.film_id = likes.film_id" +
             " where d.director_id = ? group by films.film_id order by count(likes.user_id) asc";
+    public static final String DELETE_FILM_BY_ID = "delete from films where film_id = ?";
 }

@@ -37,12 +37,10 @@ public class UserService {
 
     public void addFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException {
         userStorage.addFriend(userId, friendId);
-        userStorage.addFriend(friendId, userId);
     }
 
     public void deleteFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException {
         userStorage.deleteFriend(userId, friendId);
-        userStorage.deleteFriend(friendId, userId);
     }
 
     public Collection<User> getFriends(Integer id) throws UserValidationException, UserNotFoundException {
@@ -61,5 +59,9 @@ public class UserService {
             result.add(userStorage.get(id));
         }
         return result;
+    }
+
+    public void deleteUserById(Integer userId) {
+        userStorage.deleteUserById(userId);
     }
 }

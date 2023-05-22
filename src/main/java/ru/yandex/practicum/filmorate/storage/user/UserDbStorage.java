@@ -71,7 +71,7 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(UserQueries.GET_USERS_FRIENDSHIP_STATUS, friendId, userId);
         if (friendsRows.next()) {
             if (friendsRows.getString("status").equals(Status.pending.name())) {
-                jdbcTemplate.update(UserQueries.UPDATE_FRIEND_STATUS, friendId, userId, Status.confirmed.name());
+                jdbcTemplate.update(UserQueries.UPDATE_FRIEND_STATUS, Status.confirmed.name(), friendId, userId);
             }
         } else {
             friendsRows = jdbcTemplate.queryForRowSet(UserQueries.GET_USERS_FRIENDSHIP_STATUS, userId, friendId);
@@ -94,9 +94,9 @@ public class UserDbStorage extends DbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<Integer> getFriends(Integer id) throws UserValidationException {
+    public Collection<Integer> getFriends(Integer id) throws UserNotFoundException {
         if (id == null || !contains(id)) {
-            throw new UserValidationException("User " + id + " not found");
+            throw new UserNotFoundException("User " + id + " not found");
         }
         return jdbcTemplate.query(UserQueries.GET_USER_FRIENDS, (resultSet, rowNum) -> resultSet.getInt("friend_id"), id, id);
     }
@@ -107,6 +107,11 @@ public class UserDbStorage extends DbStorage implements UserStorage {
             throw new UserNotFoundException("ID: " + user.getId() + " doesn't exist");
         }
         jdbcTemplate.update(UserQueries.UPDATE_USER, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+    }
+
+    @Override
+    public void deleteUserById(Integer userId) {
+        jdbcTemplate.update(UserQueries.DELETE_USER_BY_ID, userId);
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {

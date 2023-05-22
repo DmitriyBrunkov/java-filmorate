@@ -17,7 +17,9 @@ public interface UserStorage {
 
     void deleteFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException;
 
-    Collection<Integer> getFriends(Integer id) throws UserValidationException;
+    Collection<Integer> getFriends(Integer id) throws UserNotFoundException;
 
     void update(User user) throws UserNotFoundException;
+
+    void deleteUserById(Integer userId);
 }

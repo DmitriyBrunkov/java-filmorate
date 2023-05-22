@@ -64,6 +64,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new NotImplException("InMemoryFilmStorage: getFilmsDirectorSorted() not implemented");
     }
 
+    @Override
+    public void deleteFilm(Integer filmId) {
+        films.remove(filmId);
+    }
+
     private int generateId() {
         while (films.containsKey(currentId)) {
             currentId++;

@@ -12,4 +12,5 @@ public final class UserQueries {
     public static final String UPDATE_FRIEND_STATUS = "update friends set status = ? where user_id = ? and friend_id = ?";
     public static final String GET_USERS_FRIENDSHIP_STATUS = "select status from friends where user_id = ? and friend_id = ?";
     public static final String DELETE_FRIEND = "delete from friends where user_id = ? and friend_id = ?";
+    public static final String DELETE_USER_BY_ID = "delete from users where user_id = ?";
 }

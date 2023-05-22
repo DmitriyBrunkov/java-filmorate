@@ -68,4 +68,9 @@ public class UserController {
         log.info("Updated user: {}", user);
         return user;
     }
+
+    @DeleteMapping("{id}")
+    public void deleteUserById(@PathVariable("id") Integer userId) {
+        userService.deleteUserById(userId);
+    }
 }

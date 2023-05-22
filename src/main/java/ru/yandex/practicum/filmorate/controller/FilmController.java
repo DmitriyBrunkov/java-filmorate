@@ -72,4 +72,9 @@ public class FilmController {
     public List<Film> getDirectorSortedFilms(@PathVariable Integer directorId, @RequestParam String sortBy) throws DirectorNotFoundException, InvalidParameterException {
         return filmService.getFilmsDirectorSorted(directorId, sortBy);
     }
+
+    @DeleteMapping("{id}")
+    public void deleteFilm(@PathVariable("id") int filmId) {
+        filmService.deleteFilm(filmId);
+    }
 }
