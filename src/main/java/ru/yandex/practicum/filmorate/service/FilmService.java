@@ -61,10 +61,10 @@ public class FilmService {
     }
 
     public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
-       return filmStorage.getFilmsDirectorSorted(directorId,sortBy);
+        return filmStorage.getFilmsDirectorSorted(directorId, sortBy);
     }
 
-        private int compare(Film f0, Film f1) {
+    private int compare(Film f0, Film f1) {
         return Integer.compare(f0.getLikes().size(), f1.getLikes().size()) * (-1);
     }
 }

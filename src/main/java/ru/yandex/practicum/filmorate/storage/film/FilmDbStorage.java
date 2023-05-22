@@ -36,7 +36,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
     @Override
     public Collection<Film> getAll() {
         genres = getGenres();
-        directors = geDirectors();
+        directors = getAllDirectors();
 
         Collection<Film> films = jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilmWoGenres);
         SqlRowSet filmGenreRow = jdbcTemplate.queryForRowSet(GenreQueries.GET_ALL_FILM_GENRES);
@@ -64,7 +64,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             throw new FilmNotFoundException("ID: " + id + " doesn't exist");
         }
         genres = getGenres();
-        directors = geDirectors();
+        directors = getAllDirectors();
         return jdbcTemplate.queryForObject(FilmQueries.GET_FILM_BY_ID_WITH_MPA_NAMES, this::mapRowToFilm, id);
     }
 
@@ -146,7 +146,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             throw new DirectorNotFoundException("ID: " + directorId + " doesn't exist");
         }
         genres = getGenres();
-        directors = geDirectors();
+        directors = getAllDirectors();
         switch (sortBy) {
             case "year":
                 return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR, this::mapRowToFilm, directorId);
@@ -222,7 +222,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         return director;
     }
 
-    private Set<Director> geDirectors() {
+    private Set<Director> getAllDirectors() {
         return new HashSet<>(jdbcTemplate.query(DirectorQueries.GET_ALL_DIRECTORS, this::mapRowToDirector));
     }
 }

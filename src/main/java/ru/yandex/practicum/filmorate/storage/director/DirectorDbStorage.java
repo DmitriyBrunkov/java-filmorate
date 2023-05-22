@@ -49,18 +49,18 @@ public class DirectorDbStorage extends DbStorage implements DirectorStorage {
 
     @Override
     public void update(Director director) throws DirectorNotFoundException {
-        if (director.getId() == null || !contains(director.getId())) {
+        int cnt = jdbcTemplate.update(DirectorQueries.UPDATE_DIRECTOR, director.getName(), director.getId());
+        if (cnt == 0) {
             throw new DirectorNotFoundException("ID:" + director.getId() + " doesn't exist");
         }
-        jdbcTemplate.update(DirectorQueries.UPDATE_DIRECTOR, director.getName(), director.getId());
     }
 
     @Override
     public void delete(Integer id) throws DirectorNotFoundException {
-        if (id == null || !contains(id)) {
+        int cnt = jdbcTemplate.update(DirectorQueries.DELETE_DIRECTOR, id);
+        if (cnt == 0) {
             throw new DirectorNotFoundException("ID:" + id + " doesn't exist");
         }
-        jdbcTemplate.update(DirectorQueries.DELETE_DIRECTOR, id);
     }
 
     private boolean contains(Integer id) {

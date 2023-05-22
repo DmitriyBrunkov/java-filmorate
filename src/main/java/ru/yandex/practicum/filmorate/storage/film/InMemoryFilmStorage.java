@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -64,7 +61,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException {
-        return null;
+        throw new NotImplException("InMemoryFilmStorage: getFilmsDirectorSorted() not implemented");
     }
 
     private int generateId() {
