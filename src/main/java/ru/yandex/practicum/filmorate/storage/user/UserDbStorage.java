@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Component("UserDbStorage")
 public class UserDbStorage extends DbStorage implements UserStorage {
-    private enum Status {pending, confirmed}
+    private enum Status { pending, confirmed }
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
