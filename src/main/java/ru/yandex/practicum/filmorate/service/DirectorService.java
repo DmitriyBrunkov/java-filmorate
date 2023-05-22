@@ -13,11 +13,11 @@ public class DirectorService {
     private final DirectorStorage directorStorage;
 
     @Autowired
-    public DirectorService(DirectorStorage directorStorage){
+    public DirectorService(DirectorStorage directorStorage) {
         this.directorStorage = directorStorage;
     }
 
-    public Collection<Director> getAll(){
+    public Collection<Director> getAll() {
         return directorStorage.getAll();
     }
 
@@ -25,7 +25,7 @@ public class DirectorService {
         return directorStorage.get(id);
     }
 
-    public void put(Director director){
+    public void put(Director director) {
         directorStorage.put(director);
     }
 
