@@ -5,13 +5,13 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
+import ru.yandex.practicum.filmorate.storage.director.queries.DirectorQueries;
 import ru.yandex.practicum.filmorate.storage.film.queries.FilmQueries;
 import ru.yandex.practicum.filmorate.storage.genre.queries.GenreQueries;
 
@@ -31,9 +31,13 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
 
     private Set<Genre> genres = new TreeSet<>();
 
+    private Set<Director> directors = new HashSet<>();
+
     @Override
     public Collection<Film> getAll() {
         genres = getGenres();
+        directors = geDirectors();
+
         Collection<Film> films = jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilmWoGenres);
         SqlRowSet filmGenreRow = jdbcTemplate.queryForRowSet(GenreQueries.GET_ALL_FILM_GENRES);
         while (filmGenreRow.next()) {
@@ -42,6 +46,14 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             genre.setName(filmGenreRow.getString("name"));
             films.stream().filter(f -> f.getId().equals(filmGenreRow.getInt("film_id"))).findAny().get()
                     .getGenres().add(genre);
+        }
+        SqlRowSet filmDirectorRow = jdbcTemplate.queryForRowSet(FilmQueries.GET_ALL_FILM_DIRECTORS);
+        while (filmDirectorRow.next()) {
+            Director director = new Director();
+            director.setId(filmDirectorRow.getInt("director_id"));
+            director.setName(filmDirectorRow.getString("name"));
+            films.stream().filter(f -> f.getId().equals(filmDirectorRow.getInt("film_id"))).findAny().get()
+                    .getDirectors().add(director);
         }
         return films;
     }
@@ -52,6 +64,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             throw new FilmNotFoundException("ID: " + id + " doesn't exist");
         }
         genres = getGenres();
+        directors = geDirectors();
         return jdbcTemplate.queryForObject(FilmQueries.GET_FILM_BY_ID_WITH_MPA_NAMES, this::mapRowToFilm, id);
     }
 
@@ -77,6 +90,11 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
                 jdbcTemplate.update(FilmQueries.ADD_GENRE_OF_FILM, film.getId(), genre.getId());
             }
         }
+        if (!film.getDirectors().isEmpty()) {
+            for (Director director : film.getDirectors()) {
+                jdbcTemplate.update(FilmQueries.ADD_DIRECTOR_OF_FILM, film.getId(), director.getId());
+            }
+        }
     }
 
     @Override
@@ -90,6 +108,12 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         if (!film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update(FilmQueries.ADD_GENRE_OF_FILM, film.getId(), genre.getId());
+            }
+        }
+        jdbcTemplate.update(FilmQueries.DELETE_DIRECTORS_OF_FILM, film.getId());
+        if (!film.getDirectors().isEmpty()) {
+            for (Director director : film.getDirectors()) {
+                jdbcTemplate.update(FilmQueries.ADD_DIRECTOR_OF_FILM, film.getId(), director.getId());
             }
         }
     }
@@ -112,6 +136,24 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             throw new UserNotFoundException("User ID: " + userId + " doesn't exist");
         }
         jdbcTemplate.update(FilmQueries.DELETE_LIKE, filmId, userId);
+    }
+
+
+    @Override
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(DirectorQueries.GET_DIRECTOR_BY_ID, directorId);
+        if (!sqlRowSet.next()){
+            throw new DirectorNotFoundException("ID: " + directorId + " doesn't exist");
+        }
+        genres = getGenres();
+        directors = geDirectors();
+        switch (sortBy) {
+            case "year":
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR,this::mapRowToFilm, directorId);
+            case "likes":
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES,this::mapRowToFilm, directorId);
+        }
+       throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
     }
 
     private boolean contains(Integer id) {
@@ -137,6 +179,12 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             filmGenres.add(genres.stream().filter(g -> g.getId().equals(i)).findAny().get());
         }
         film.setGenres(filmGenres);
+        Set<Director> filmDirectors = new HashSet<>();
+        Set<Integer> filmDirectorsId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_DIRECTORS_ID, (rs, rowNumber) -> rs.getInt("director_id"), film.getId()));
+        for (Integer i : filmDirectorsId) {
+            filmDirectors.add(directors.stream().filter(g -> g.getId().equals(i)).findAny().get());
+        }
+        film.setDirectors(filmDirectors);
         return film;
     }
 
@@ -164,5 +212,17 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
 
     private Set<Genre> getGenres() {
         return new TreeSet<>(jdbcTemplate.query(GenreQueries.GET_ALL_GENRES, this::mapRowToGenre));
+    }
+
+
+    private Director mapRowToDirector(ResultSet resultSet, int rowNum) throws SQLException {
+        Director director = new Director();
+        director.setId(resultSet.getInt("director_id"));
+        director.setName(resultSet.getString("name"));
+        return director;
+    }
+
+    private Set<Director> geDirectors() {
+        return new HashSet<>(jdbcTemplate.query(DirectorQueries.GET_ALL_DIRECTORS, this::mapRowToDirector));
     }
 }

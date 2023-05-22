@@ -26,4 +26,5 @@ public class Film {
     private Mpa mpa;
     private Set<Integer> likes = new HashSet<>();
     private Set<Genre> genres = new TreeSet<>();
+    private Set<Director> directors = new HashSet<>();
 }

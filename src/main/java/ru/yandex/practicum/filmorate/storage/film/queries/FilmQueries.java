@@ -19,4 +19,18 @@ public final class FilmQueries {
     public static final String DELETE_LIKE = "delete from LIKES where FILM_ID = ? and  USER_ID = ?";
     public static final String CHECK_LIKE = "select film_id, user_id from LIKES where FILM_ID = ? and USER_ID = ?";
     public static final String GET_FILM_LIKES = "select USER_ID from LIKES where FILM_ID = ?";
+    public static final String ADD_DIRECTOR_OF_FILM = "insert into films_director (film_id, director_id) VALUES (?, ?)";
+    public static final String DELETE_DIRECTORS_OF_FILM = "delete from films_director where film_id = ?";
+    public static final String GET_FILM_DIRECTORS_ID = "select director_id from films_director where film_id = ?";
+    public static final String GET_ALL_FILM_DIRECTORS = "select films_director.film_id, directors.director_id, name" +
+            " from films_director left join directors on films_director.director_id = directors.director_id";
+    public static final String GET_FILMS_SORTED_DIRECTOR_BY_YEAR ="select films.film_id, films.name, films.description, films.release_date," +
+            " films.duration, films.mpa_id, mpa.mpa_id, mpa.name from films left outer join mpa on films.mpa_id = mpa.mpa_id" +
+            " left outer join films_director as fd on films.film_id = fd.film_id left outer join directors as d" +
+            " on fd.director_id = d.director_id where d.director_id = ? order by YEAR(films.release_date) asc";
+    public static final String GET_FILMS_SORTED_DIRECTOR_BY_LIKES = "select films.film_id, films.name, films.description, films.release_date," +
+            " films.duration, films.mpa_id, mpa.mpa_id, mpa.name from films left outer join mpa on films.mpa_id = mpa.mpa_id" +
+            " left outer join films_director as fd on films.film_id = fd.film_id left outer join directors as d" +
+            " on fd.director_id = d.director_id left outer join likes on films.film_id = likes.film_id" +
+            " where d.director_id = ? group by films.film_id order by count(likes.user_id) asc";
 }

@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -62,7 +60,11 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    private int compare(Film f0, Film f1) {
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+       return filmStorage.getFilmsDirectorSorted(directorId,sortBy);
+    }
+
+        private int compare(Film f0, Film f1) {
         return Integer.compare(f0.getLikes().size(), f1.getLikes().size()) * (-1);
     }
 }
