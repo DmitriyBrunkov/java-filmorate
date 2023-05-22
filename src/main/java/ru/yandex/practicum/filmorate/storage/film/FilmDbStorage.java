@@ -142,18 +142,18 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
     @Override
     public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(DirectorQueries.GET_DIRECTOR_BY_ID, directorId);
-        if (!sqlRowSet.next()){
+        if (!sqlRowSet.next()) {
             throw new DirectorNotFoundException("ID: " + directorId + " doesn't exist");
         }
         genres = getGenres();
         directors = geDirectors();
         switch (sortBy) {
             case "year":
-                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR,this::mapRowToFilm, directorId);
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR, this::mapRowToFilm, directorId);
             case "likes":
-                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES,this::mapRowToFilm, directorId);
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES, this::mapRowToFilm, directorId);
         }
-       throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
+        throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
     }
 
     private boolean contains(Integer id) {

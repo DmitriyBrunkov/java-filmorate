@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Component
-public class DirectorDbStorage extends DbStorage implements DirectorStorage{
+public class DirectorDbStorage extends DbStorage implements DirectorStorage {
 
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -25,15 +25,15 @@ public class DirectorDbStorage extends DbStorage implements DirectorStorage{
 
     @Override
     public Collection<Director> getAll() {
-        return jdbcTemplate.query(DirectorQueries.GET_ALL_DIRECTORS,this::mapRowToDirector);
+        return jdbcTemplate.query(DirectorQueries.GET_ALL_DIRECTORS, this::mapRowToDirector);
     }
 
     @Override
     public Director get(Integer id) throws DirectorNotFoundException {
-        if(!contains(id)){
+        if (!contains(id)) {
             throw new DirectorNotFoundException("ID:" + id + " doesn't exist");
         }
-        return jdbcTemplate.queryForObject(DirectorQueries.GET_DIRECTOR_BY_ID,this::mapRowToDirector,id);
+        return jdbcTemplate.queryForObject(DirectorQueries.GET_DIRECTOR_BY_ID, this::mapRowToDirector, id);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class DirectorDbStorage extends DbStorage implements DirectorStorage{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(DirectorQueries.ADD_DIRECTOR, new String[]{"director_id"});
-            ps.setString(1,director.getName());
+            ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
         director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
@@ -49,26 +49,26 @@ public class DirectorDbStorage extends DbStorage implements DirectorStorage{
 
     @Override
     public void update(Director director) throws DirectorNotFoundException {
-        if(director.getId() == null || !contains(director.getId())){
+        if (director.getId() == null || !contains(director.getId())) {
             throw new DirectorNotFoundException("ID:" + director.getId() + " doesn't exist");
         }
-        jdbcTemplate.update(DirectorQueries.UPDATE_DIRECTOR,director.getName(),director.getId());
+        jdbcTemplate.update(DirectorQueries.UPDATE_DIRECTOR, director.getName(), director.getId());
     }
 
     @Override
     public void delete(Integer id) throws DirectorNotFoundException {
-        if(id == null || !contains(id)){
+        if (id == null || !contains(id)) {
             throw new DirectorNotFoundException("ID:" + id + " doesn't exist");
         }
-        jdbcTemplate.update(DirectorQueries.DELETE_DIRECTOR,id);
+        jdbcTemplate.update(DirectorQueries.DELETE_DIRECTOR, id);
     }
 
-    private boolean contains(Integer id){
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(DirectorQueries.GET_DIRECTOR_BY_ID,id);
+    private boolean contains(Integer id) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(DirectorQueries.GET_DIRECTOR_BY_ID, id);
         return sqlRowSet.next();
     }
 
-    private Director mapRowToDirector(ResultSet resultSet, int rowNum) throws SQLException{
+    private Director mapRowToDirector(ResultSet resultSet, int rowNum) throws SQLException {
         Director director = new Director();
         director.setId(resultSet.getInt("director_id"));
         director.setName(resultSet.getString("name"));
