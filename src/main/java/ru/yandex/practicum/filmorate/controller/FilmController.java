@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -68,5 +66,10 @@ public class FilmController {
     @GetMapping("/common")
     public List<Film> getCommonUserFriendFilms(@RequestParam int userId, @RequestParam int friendId) {
         return filmService.getCommonUserFriendFilms(userId, friendId);
+    }
+
+    @GetMapping("director/{directorId}")
+    public List<Film> getDirectorSortedFilms(@PathVariable Integer directorId, @RequestParam String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+        return filmService.getFilmsDirectorSorted(directorId, sortBy);
     }
 }

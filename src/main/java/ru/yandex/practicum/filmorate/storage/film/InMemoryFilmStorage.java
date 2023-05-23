@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component("InMemoryFilmStorage")
@@ -58,6 +57,11 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new UserNotFoundException("User ID: " + userId + " doesn't exist");
         }
         films.get(filmId).getLikes().remove(userId);
+    }
+
+    @Override
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException {
+        throw new NotImplException("InMemoryFilmStorage: getFilmsDirectorSorted() not implemented");
     }
 
     private int generateId() {
