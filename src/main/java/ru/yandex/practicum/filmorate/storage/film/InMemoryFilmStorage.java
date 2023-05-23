@@ -69,6 +69,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(filmId);
     }
 
+    @Override
+    public List<Film> searchBy(String query, String by) {
+        throw new NotImplException("InMemoryFilmStorage: searchBy() not implemented");
+    }
+
     private int generateId() {
         while (films.containsKey(currentId)) {
             currentId++;

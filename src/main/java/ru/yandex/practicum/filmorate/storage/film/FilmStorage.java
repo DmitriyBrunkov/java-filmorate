@@ -22,4 +22,6 @@ public interface FilmStorage {
     List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException;
 
     void deleteFilm(Integer filmId);
+
+    List<Film> searchBy(String query, String by);
 }
