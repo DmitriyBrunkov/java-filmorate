@@ -72,4 +72,10 @@ public class FilmController {
     public List<Film> getDirectorSortedFilms(@PathVariable Integer directorId, @RequestParam String sortBy) throws DirectorNotFoundException, InvalidParameterException {
         return filmService.getFilmsDirectorSorted(directorId, sortBy);
     }
+
+    @GetMapping("/search")
+    public List<Film> search(@RequestParam(defaultValue = "") String query, @RequestParam(defaultValue = "") String by) {
+        return filmService.searchBy(query, by);
+    }
+
 }

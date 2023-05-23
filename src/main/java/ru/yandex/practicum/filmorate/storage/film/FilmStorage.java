@@ -20,4 +20,6 @@ public interface FilmStorage {
     void deleteLike(Integer filmId, Integer userId) throws FilmValidationException, FilmNotFoundException, UserNotFoundException;
 
     List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException;
+
+    List<Film> searchBy(String query, String by);
 }

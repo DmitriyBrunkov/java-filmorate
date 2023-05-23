@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -20,9 +21,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component("FilmDbStorage")
+@Slf4j
 public class FilmDbStorage extends DbStorage implements FilmStorage {
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -154,6 +157,51 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
                 return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES, this::mapRowToFilm, directorId);
         }
         throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
+    }
+
+    @Override
+    public List<Film> searchBy(String query, String by) {
+        List<Film> films = new ArrayList<>(getAll());
+        List<Film> neededFilms = new ArrayList<>();
+        by = by.replaceAll("\\s", "").toLowerCase();
+        switch (by) {
+            case ("title"):
+                for (Film film : films) {
+                    if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                        neededFilms.add(film);
+                    }
+                }
+                break;
+            case ("director"):
+                for (Film film : films) {
+                    for (Director director : film.getDirectors()) {
+                        if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                            neededFilms.add(film);
+                        }
+                    }
+                }
+                break;
+            default:
+                String[] splitBy = by.split(",");
+                if (splitBy.length == 2
+                        && (splitBy[0].equals("title")
+                        && splitBy[1].equals("director")
+                        || splitBy[1].equals("title")
+                        && splitBy[0].equals("director"))) {
+                    for (Film film : films) {
+                        if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                            neededFilms.add(film);
+                        }
+                        for (Director director : film.getDirectors()) {
+                            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                                neededFilms.add(film);
+                            }
+                        }
+                    }
+                    break;
+                }
+        }
+        return neededFilms;
     }
 
     private boolean contains(Integer id) {
