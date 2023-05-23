@@ -156,6 +156,11 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
     }
 
+    @Override
+    public void deleteFilm(Integer filmId) {
+        jdbcTemplate.update(FilmQueries.DELETE_FILM_BY_ID, filmId);
+    }
+
     private boolean contains(Integer id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(FilmQueries.GET_FILM_BY_ID, id);
         return userRows.next();

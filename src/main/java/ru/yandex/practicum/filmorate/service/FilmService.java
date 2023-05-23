@@ -60,6 +60,10 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteFilm(Integer filmId) {
+        filmStorage.deleteFilm(filmId);
+    }
+
     public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
         return filmStorage.getFilmsDirectorSorted(directorId, sortBy);
     }

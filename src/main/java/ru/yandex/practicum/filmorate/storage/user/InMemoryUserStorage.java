@@ -59,9 +59,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<Integer> getFriends(Integer id) throws UserValidationException {
+    public Collection<Integer> getFriends(Integer id) throws UserNotFoundException {
         if (id == null || !contains(id)) {
-            throw new UserValidationException("User " + id + " not found");
+            throw new UserNotFoundException("User " + id + " not found");
         }
         return users.get(id).getFriends();
     }
@@ -72,6 +72,11 @@ public class InMemoryUserStorage implements UserStorage {
             throw new UserNotFoundException("ID: " + user.getId() + " doesn't exist");
         }
         users.put(user.getId(), user);
+    }
+
+    @Override
+    public void deleteUserById(Integer userId) {
+        users.remove(userId);
     }
 
     //@Override
