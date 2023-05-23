@@ -22,4 +22,6 @@ public interface UserStorage {
     void update(User user) throws UserNotFoundException;
 
     void deleteUserById(Integer userId);
+
+    Collection<Integer> getRecommendationsId(Integer userId) throws UserValidationException;
 }

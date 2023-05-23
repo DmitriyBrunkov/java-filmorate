@@ -21,9 +21,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-
 @Component("FilmDbStorage")
 public class FilmDbStorage extends DbStorage implements FilmStorage {
+
+    private Set<Genre> genres = new TreeSet<>();
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
@@ -39,13 +40,28 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         directors = getAllDirectors();
 
         Collection<Film> films = jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilmWoGenres);
+        getGenres(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> getAll(Collection<Integer> filmsList) {
+        Collection<Film> films;
+        String inSql = String.join(",", Collections.nCopies(filmsList.size(), "?"));
+        films = jdbcTemplate.query(String.format(FilmQueries.GET_FILMS_BY_LIST, inSql), filmsList.toArray(), this::mapRowToFilmWoGenres);
+        getGenres(films);
+        return films;
+    }
+
+    private void getGenres(Collection<Film> films) {
         SqlRowSet filmGenreRow = jdbcTemplate.queryForRowSet(GenreQueries.GET_ALL_FILM_GENRES);
         while (filmGenreRow.next()) {
             Genre genre = new Genre();
             genre.setId(filmGenreRow.getInt("genre_id"));
             genre.setName(filmGenreRow.getString("name"));
-            films.stream().filter(f -> f.getId().equals(filmGenreRow.getInt("film_id"))).findAny().get()
-                    .getGenres().add(genre);
+            if (films.stream().anyMatch(f -> f.getId().equals(filmGenreRow.getInt("film_id")))) {
+                films.stream().filter(f -> f.getId().equals(filmGenreRow.getInt("film_id"))).findAny().get().getGenres().add(genre);
+            }
         }
         SqlRowSet filmDirectorRow = jdbcTemplate.queryForRowSet(FilmQueries.GET_ALL_FILM_DIRECTORS);
         while (filmDirectorRow.next()) {
@@ -102,8 +118,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         if (film.getId() == null || !contains(film.getId())) {
             throw new FilmNotFoundException("ID: " + film.getId() + " doesn't exist");
         }
-        jdbcTemplate.update(FilmQueries.UPDATE_FILM, film.getName(), film.getDescription(),
-                Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
+        jdbcTemplate.update(FilmQueries.UPDATE_FILM, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
         jdbcTemplate.update(FilmQueries.DELETE_GENRES_OF_FILM, film.getId());
         if (!film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {

@@ -79,6 +79,11 @@ public class InMemoryUserStorage implements UserStorage {
         users.remove(userId);
     }
 
+    @Override
+    public Collection<Integer> getRecommendationsId(Integer userId) {
+        return null;
+    }
+
     //@Override
     private boolean contains(Integer id) {
         return users.containsKey(id);
