@@ -13,4 +13,8 @@ public final class UserQueries {
     public static final String GET_USERS_FRIENDSHIP_STATUS = "select status from friends where user_id = ? and friend_id = ?";
     public static final String DELETE_FRIEND = "delete from friends where user_id = ? and friend_id = ?";
     public static final String DELETE_USER_BY_ID = "delete from users where user_id = ?";
+    public static final String GET_RECOMMENDATIONS = "select FILM_ID from LIKES where USER_ID =" +
+            " (select USER_ID from LIKES where FILM_ID IN (select FILM_ID from LIKES where USER_ID = ?)" +
+            " and NOT USER_ID = ? group by USER_ID order by count(USER_ID) desc limit 1) and not FILM_ID in" +
+            " (select FILM_ID from LIKES where USER_ID = ?);";
 }

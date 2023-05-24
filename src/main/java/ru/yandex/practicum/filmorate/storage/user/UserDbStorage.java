@@ -61,7 +61,7 @@ public class UserDbStorage extends DbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException {
+    public void addFriend(Integer userId, Integer friendId) throws UserNotFoundException {
         if (userId == null || !contains(userId)) {
             throw new UserNotFoundException("User " + userId + " not found");
         }
@@ -112,6 +112,14 @@ public class UserDbStorage extends DbStorage implements UserStorage {
     @Override
     public void deleteUserById(Integer userId) {
         jdbcTemplate.update(UserQueries.DELETE_USER_BY_ID, userId);
+    }
+
+    @Override
+    public Collection<Integer> getRecommendationsId(Integer userId) throws UserValidationException {
+        if (userId == null || !contains(userId)) {
+            throw new UserValidationException("User " + userId + " not found");
+        }
+        return jdbcTemplate.query(UserQueries.GET_RECOMMENDATIONS, (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId);
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {

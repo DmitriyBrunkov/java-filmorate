@@ -21,40 +21,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-
 @Component("FilmDbStorage")
 public class FilmDbStorage extends DbStorage implements FilmStorage {
+
+    private Set<Genre> genres = new TreeSet<>();
+    private Set<Director> directors = new HashSet<>();
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 
-    private Set<Genre> genres = new TreeSet<>();
-
-    private Set<Director> directors = new HashSet<>();
-
     @Override
     public Collection<Film> getAll() {
         genres = getGenres();
         directors = getAllDirectors();
-
         Collection<Film> films = jdbcTemplate.query(FilmQueries.GET_ALL_FILMS, this::mapRowToFilmWoGenres);
-        SqlRowSet filmGenreRow = jdbcTemplate.queryForRowSet(GenreQueries.GET_ALL_FILM_GENRES);
-        while (filmGenreRow.next()) {
-            Genre genre = new Genre();
-            genre.setId(filmGenreRow.getInt("genre_id"));
-            genre.setName(filmGenreRow.getString("name"));
-            films.stream().filter(f -> f.getId().equals(filmGenreRow.getInt("film_id"))).findAny().get()
-                    .getGenres().add(genre);
-        }
-        SqlRowSet filmDirectorRow = jdbcTemplate.queryForRowSet(FilmQueries.GET_ALL_FILM_DIRECTORS);
-        while (filmDirectorRow.next()) {
-            Director director = new Director();
-            director.setId(filmDirectorRow.getInt("director_id"));
-            director.setName(filmDirectorRow.getString("name"));
-            films.stream().filter(f -> f.getId().equals(filmDirectorRow.getInt("film_id"))).findAny().get()
-                    .getDirectors().add(director);
-        }
+        setGenres(films);
+        setDirectors(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> getAll(Collection<Integer> filmsList) {
+        genres = getGenres();
+        directors = getAllDirectors();
+        Collection<Film> films;
+        String inSql = String.join(",", Collections.nCopies(filmsList.size(), "?"));
+        films = jdbcTemplate.query(String.format(FilmQueries.GET_FILMS_BY_LIST, inSql), filmsList.toArray(),
+                this::mapRowToFilmWoGenres);
+        setGenres(films);
+        setDirectors(films);
         return films;
     }
 
@@ -138,9 +134,9 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         jdbcTemplate.update(FilmQueries.DELETE_LIKE, filmId, userId);
     }
 
-
     @Override
-    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException,
+            InvalidParameterException {
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(DirectorQueries.GET_DIRECTOR_BY_ID, directorId);
         if (!sqlRowSet.next()) {
             throw new DirectorNotFoundException("ID: " + directorId + " doesn't exist");
@@ -149,9 +145,11 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         directors = getAllDirectors();
         switch (sortBy) {
             case "year":
-                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR, this::mapRowToFilm, directorId);
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR, this::mapRowToFilm,
+                        directorId);
             case "likes":
-                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES, this::mapRowToFilm, directorId);
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES, this::mapRowToFilm,
+                        directorId);
         }
         throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
     }
@@ -167,25 +165,17 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
-        Film film = new Film();
-        film.setId(resultSet.getInt("film_id"));
-        film.setName(resultSet.getString("name"));
-        film.setDescription(resultSet.getString("description"));
-        film.setReleaseDate(resultSet.getDate("release_date").toLocalDate());
-        film.setDuration(resultSet.getInt("duration"));
-        Mpa mpa = new Mpa();
-        mpa.setId(resultSet.getInt("films.mpa_id"));
-        mpa.setName(resultSet.getString("mpa.name"));
-        film.setMpa(mpa);
-        film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES, (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
-        Set<Integer> filmGenresId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_GENRES_ID, (rs, rowNumber) -> rs.getInt("genre_id"), film.getId()));
+        Film film = setFilm(resultSet);
+        Set<Integer> filmGenresId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_GENRES_ID,
+                (rs, rowNumber) -> rs.getInt("genre_id"), film.getId()));
         Set<Genre> filmGenres = new TreeSet<>();
         for (Integer i : filmGenresId) {
             filmGenres.add(genres.stream().filter(g -> g.getId().equals(i)).findAny().get());
         }
         film.setGenres(filmGenres);
         Set<Director> filmDirectors = new HashSet<>();
-        Set<Integer> filmDirectorsId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_DIRECTORS_ID, (rs, rowNumber) -> rs.getInt("director_id"), film.getId()));
+        Set<Integer> filmDirectorsId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_DIRECTORS_ID,
+                (rs, rowNumber) -> rs.getInt("director_id"), film.getId()));
         for (Integer i : filmDirectorsId) {
             filmDirectors.add(directors.stream().filter(g -> g.getId().equals(i)).findAny().get());
         }
@@ -194,6 +184,10 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
     }
 
     private Film mapRowToFilmWoGenres(ResultSet resultSet, int rowNum) throws SQLException {
+        return setFilm(resultSet);
+    }
+
+    private Film setFilm(ResultSet resultSet) throws SQLException {
         Film film = new Film();
         film.setId(resultSet.getInt("film_id"));
         film.setName(resultSet.getString("name"));
@@ -204,7 +198,8 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         mpa.setId(resultSet.getInt("films.mpa_id"));
         mpa.setName(resultSet.getString("mpa.name"));
         film.setMpa(mpa);
-        film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES, (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
+        film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES,
+                (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
         return film;
     }
 
@@ -219,6 +214,18 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         return new TreeSet<>(jdbcTemplate.query(GenreQueries.GET_ALL_GENRES, this::mapRowToGenre));
     }
 
+    private void setGenres(Collection<Film> films) {
+        SqlRowSet filmGenreRow = jdbcTemplate.queryForRowSet(GenreQueries.GET_ALL_FILM_GENRES);
+        while (filmGenreRow.next()) {
+            Genre genre = new Genre();
+            genre.setId(filmGenreRow.getInt("genre_id"));
+            genre.setName(filmGenreRow.getString("name"));
+            if (films.stream().anyMatch(f -> f.getId().equals(filmGenreRow.getInt("film_id")))) {
+                films.stream().filter(f -> f.getId().equals(filmGenreRow.getInt("film_id"))).findAny().get()
+                        .getGenres().add(genre);
+            }
+        }
+    }
 
     private Director mapRowToDirector(ResultSet resultSet, int rowNum) throws SQLException {
         Director director = new Director();
@@ -229,5 +236,18 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
 
     private Set<Director> getAllDirectors() {
         return new HashSet<>(jdbcTemplate.query(DirectorQueries.GET_ALL_DIRECTORS, this::mapRowToDirector));
+    }
+
+    private void setDirectors(Collection<Film> films) {
+        SqlRowSet filmDirectorRow = jdbcTemplate.queryForRowSet(FilmQueries.GET_ALL_FILM_DIRECTORS);
+        while (filmDirectorRow.next()) {
+            Director director = new Director();
+            director.setId(filmDirectorRow.getInt("director_id"));
+            director.setName(filmDirectorRow.getString("name"));
+            if (films.stream().anyMatch(film -> film.getId().equals(filmDirectorRow.getInt("film_id")))) {
+                films.stream().filter(f -> f.getId().equals(filmDirectorRow.getInt("film_id"))).findAny().get()
+                        .getDirectors().add(director);
+            }
+        }
     }
 }

@@ -9,6 +9,8 @@ import java.util.List;
 public interface FilmStorage {
     Collection<Film> getAll();
 
+    Collection<Film> getAll(Collection<Integer> filmsList);
+
     Film get(Integer id) throws FilmNotFoundException;
 
     void put(Film film);
