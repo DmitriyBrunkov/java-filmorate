@@ -47,7 +47,8 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         directors = getAllDirectors();
         Collection<Film> films;
         String inSql = String.join(",", Collections.nCopies(filmsList.size(), "?"));
-        films = jdbcTemplate.query(String.format(FilmQueries.GET_FILMS_BY_LIST, inSql), filmsList.toArray(), this::mapRowToFilmWoGenres);
+        films = jdbcTemplate.query(String.format(FilmQueries.GET_FILMS_BY_LIST, inSql), filmsList.toArray(),
+                this::mapRowToFilmWoGenres);
         setGenres(films);
         setDirectors(films);
         return films;
@@ -97,7 +98,8 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         if (film.getId() == null || !contains(film.getId())) {
             throw new FilmNotFoundException("ID: " + film.getId() + " doesn't exist");
         }
-        jdbcTemplate.update(FilmQueries.UPDATE_FILM, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
+        jdbcTemplate.update(FilmQueries.UPDATE_FILM, film.getName(), film.getDescription(),
+                Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
         jdbcTemplate.update(FilmQueries.DELETE_GENRES_OF_FILM, film.getId());
         if (!film.getGenres().isEmpty()) {
             for (Genre genre : film.getGenres()) {
@@ -133,7 +135,8 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException,
+            InvalidParameterException {
         SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(DirectorQueries.GET_DIRECTOR_BY_ID, directorId);
         if (!sqlRowSet.next()) {
             throw new DirectorNotFoundException("ID: " + directorId + " doesn't exist");
@@ -142,9 +145,11 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         directors = getAllDirectors();
         switch (sortBy) {
             case "year":
-                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR, this::mapRowToFilm, directorId);
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_YEAR, this::mapRowToFilm,
+                        directorId);
             case "likes":
-                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES, this::mapRowToFilm, directorId);
+                return jdbcTemplate.query(FilmQueries.GET_FILMS_SORTED_DIRECTOR_BY_LIKES, this::mapRowToFilm,
+                        directorId);
         }
         throw new InvalidParameterException("sortBy: " + sortBy + " doesn't exist");
     }
@@ -161,14 +166,16 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         Film film = setFilm(resultSet);
-        Set<Integer> filmGenresId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_GENRES_ID, (rs, rowNumber) -> rs.getInt("genre_id"), film.getId()));
+        Set<Integer> filmGenresId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_GENRES_ID,
+                (rs, rowNumber) -> rs.getInt("genre_id"), film.getId()));
         Set<Genre> filmGenres = new TreeSet<>();
         for (Integer i : filmGenresId) {
             filmGenres.add(genres.stream().filter(g -> g.getId().equals(i)).findAny().get());
         }
         film.setGenres(filmGenres);
         Set<Director> filmDirectors = new HashSet<>();
-        Set<Integer> filmDirectorsId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_DIRECTORS_ID, (rs, rowNumber) -> rs.getInt("director_id"), film.getId()));
+        Set<Integer> filmDirectorsId = new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_DIRECTORS_ID,
+                (rs, rowNumber) -> rs.getInt("director_id"), film.getId()));
         for (Integer i : filmDirectorsId) {
             filmDirectors.add(directors.stream().filter(g -> g.getId().equals(i)).findAny().get());
         }
@@ -191,7 +198,8 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         mpa.setId(resultSet.getInt("films.mpa_id"));
         mpa.setName(resultSet.getString("mpa.name"));
         film.setMpa(mpa);
-        film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES, (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
+        film.setLikes(new HashSet<>(jdbcTemplate.query(FilmQueries.GET_FILM_LIKES,
+                (rs, rowNumber) -> rs.getInt("user_id"), film.getId())));
         return film;
     }
 
