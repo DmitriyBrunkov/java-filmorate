@@ -73,6 +73,12 @@ public class FilmService {
         return filmStorage.getFilmsDirectorSorted(directorId, sortBy);
     }
 
+    public List<Film> searchBy(String query, String by) {
+        return filmStorage.searchBy(query, by).stream()
+                .sorted(this::compare)
+                .collect(Collectors.toList());
+    }
+
     private int compare(Film f0, Film f1) {
         return Integer.compare(f0.getLikes().size(), f1.getLikes().size()) * (-1);
     }

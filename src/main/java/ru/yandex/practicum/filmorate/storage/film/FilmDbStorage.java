@@ -159,6 +159,51 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         jdbcTemplate.update(FilmQueries.DELETE_FILM_BY_ID, filmId);
     }
 
+    @Override
+    public List<Film> searchBy(String query, String by) {
+        List<Film> films = new ArrayList<>(getAll());
+        List<Film> neededFilms = new ArrayList<>();
+        by = by.replaceAll("\\s", "").toLowerCase();
+        switch (by) {
+            case ("title"):
+                for (Film film : films) {
+                    if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                        neededFilms.add(film);
+                    }
+                }
+                break;
+            case ("director"):
+                for (Film film : films) {
+                    for (Director director : film.getDirectors()) {
+                        if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                            neededFilms.add(film);
+                        }
+                    }
+                }
+                break;
+            default:
+                String[] splitBy = by.split(",");
+                if (splitBy.length == 2
+                        && (splitBy[0].equals("title")
+                        && splitBy[1].equals("director")
+                        || splitBy[1].equals("title")
+                        && splitBy[0].equals("director"))) {
+                    for (Film film : films) {
+                        if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                            neededFilms.add(film);
+                        }
+                        for (Director director : film.getDirectors()) {
+                            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                                neededFilms.add(film);
+                            }
+                        }
+                    }
+                    break;
+                }
+        }
+        return neededFilms;
+    }
+
     private boolean contains(Integer id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(FilmQueries.GET_FILM_BY_ID, id);
         return userRows.next();
