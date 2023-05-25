@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -45,8 +46,12 @@ public class FilmService {
         filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getPopularFilms(Integer count) {
+    public List<Film> getPopularFilms(Integer count, Integer genreId, Integer year) {
+        Genre requestGenre = new Genre();
+        requestGenre.setId(genreId);
         return filmStorage.getAll().stream()
+                .filter(genreId != null ? film -> film.getGenres().contains(requestGenre) : film -> true)
+                .filter(year != null ? film -> film.getReleaseDate().getYear() == year : film -> true)
                 .sorted(this::compare)
                 .limit(count)
                 .collect(Collectors.toList());
