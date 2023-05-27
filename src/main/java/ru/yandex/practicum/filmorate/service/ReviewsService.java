@@ -23,16 +23,16 @@ public class ReviewsService {
 
     public Reviews postReview(Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
         return reviewsStorage.postReview(reviews);
-    };
+    }
 
     public Reviews updateReview(Reviews reviews)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
         return reviewsStorage.updateReview(reviews);
-    };
+    }
 
     public void deleteReview(Integer id) throws ReviewNotFoundException {
         reviewsStorage.deleteReview(id);
-    };
+    }
 
     public Reviews getReviewById(Integer id) throws ReviewNotFoundException {
         return reviewsStorage.getReviewById(id);
@@ -40,22 +40,22 @@ public class ReviewsService {
 
     public List<Reviews> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
         return reviewsStorage.getReviewsByFilmId(id, count);
-    };
+    }
 
     public void addLike(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException {
         reviewsStorage.addLike(reviewId, userId);
-    };
+    }
 
     public void addDislike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         reviewsStorage.addDislike(reviewId, userId);
-    };
+    }
 
     public void deleteLike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         reviewsStorage.deleteLike(reviewId, userId);
-    };
+    }
 
     public void deleteDislike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         reviewsStorage.deleteDislike(reviewId, userId);
-    };
+    }
 
 }
