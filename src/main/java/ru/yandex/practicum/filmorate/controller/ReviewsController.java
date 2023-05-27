@@ -66,7 +66,7 @@ public class ReviewsController {
             @PathVariable(value = "userId") Integer userId) throws ReviewNotFoundException, UserNotFoundException {
         log.info("Поставлен лайк к ревью с id = {}.", reviewId);
         reviewsService.addLike(reviewId, userId);
-    };
+    }
 
     @PutMapping("/{id}/dislike/{userId}")
     public void addDislike(
@@ -74,7 +74,7 @@ public class ReviewsController {
             @PathVariable(value = "userId") Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         log.info("Поставлен дизлайк к ревью с id = {}.", reviewId);
         reviewsService.addDislike(reviewId, userId);
-    };
+    }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(
@@ -82,11 +82,11 @@ public class ReviewsController {
             @PathVariable(value = "userId") Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         log.info("Удален лайк к ревью с id = {}.", reviewId);
         reviewsService.deleteLike(reviewId, userId);
-    };
+    }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void deleteDislike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         log.info("Удален дизлайк к ревью с id = {}.", reviewId);
         reviewsService.deleteDislike(reviewId, userId);
-    };
+    }
 }
