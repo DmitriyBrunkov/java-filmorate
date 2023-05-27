@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.ReviewsService;
 
 import javax.validation.Valid;
 import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("/reviews")
@@ -30,29 +31,29 @@ public class ReviewsController {
     }
 
     @PutMapping
-    public Reviews updateReview (@Valid @RequestBody Reviews reviews)
+    public Reviews updateReview(@Valid @RequestBody Reviews reviews)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
         log.info("Отзыв с id = {} обновлен", reviews.getReviewId());
         return reviewsService.updateReview(reviews);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteReview (@PathVariable Integer id) throws ReviewNotFoundException {
+    public void deleteReview(@PathVariable Integer id) throws ReviewNotFoundException {
         log.info("Отзыв с id = {} удален.", id);
         reviewsService.deleteReview(id);
     }
 
     @GetMapping("/{id}")
-    public Reviews getReviewById (@PathVariable Integer id) throws ReviewNotFoundException {
+    public Reviews getReviewById(@PathVariable Integer id) throws ReviewNotFoundException {
         log.info("Отзыв с id = {} получен", id);
         return reviewsService.getReviewById(id);
     }
 
     @GetMapping
-    public List<Reviews> getReviewsByFilmId (
+    public List<Reviews> getReviewsByFilmId(
             @RequestParam(value = "filmId", required = false) Integer filmId,
             @RequestParam(value = "count", defaultValue = "10") Integer count) throws FilmNotFoundException {
-        if(filmId != null) {
+        if (filmId != null) {
             log.info("Получены самые полезные отзывы в количестве {} для фильма с id = {} ", count, filmId);
         } else {
             log.info("Самые полезные отзывы в количестве {} получены", count);
