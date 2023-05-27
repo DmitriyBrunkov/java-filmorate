@@ -38,7 +38,7 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
             ps.setBoolean(2, reviews.getIsPositive());
             ps.setInt(3, reviews.getUserId());
             ps.setInt(4, reviews.getFilmId());
-            if(reviews.getUseful() == null) {
+            if (reviews.getUseful() == null) {
                 ps.setInt(5, 0);
             } else {
                 ps.setInt(5, reviews.getUseful());
@@ -94,25 +94,25 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
     public void addLike(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException {
         checkReviewAndUser(reviewId, userId);
         jdbcTemplate.update(ReviewsQueries.ADD_LIKE_OR_DISLIKE, reviewId, userId, Usefulness.USEFUL.getValue());
-    };
+    }
 
     @Override
     public void addDislike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         checkReviewAndUser(reviewId, userId);
         jdbcTemplate.update(ReviewsQueries.ADD_LIKE_OR_DISLIKE, reviewId, userId, Usefulness.USELESS.getValue());
-    };
+    }
 
     @Override
     public void deleteLike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         checkReviewAndUsersLike(reviewId, userId);
         jdbcTemplate.update(ReviewsQueries.DELETE_LIKE_OR_DISLIKE, reviewId, userId, Usefulness.USELESS.getValue());
-    };
+    }
 
     @Override
     public void deleteDislike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         checkReviewAndUsersLike(reviewId, userId);
         jdbcTemplate.update(ReviewsQueries.DELETE_LIKE_OR_DISLIKE, reviewId, userId, Usefulness.USEFUL.getValue());
-    };
+    }
 
     private Reviews mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {
         Reviews reviews = new Reviews();
@@ -141,6 +141,7 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
             throw new UserNotFoundException("Пользователь с id = " + userId + " не найден.");
         }
     }
+
     private void checkReviewAndUsersLike(Integer reviewId, Integer userId)
             throws ReviewNotFoundException, UserNotFoundException {
         if (reviewId == null || !contains(reviewId)) {
