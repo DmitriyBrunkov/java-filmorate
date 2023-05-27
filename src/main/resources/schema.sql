@@ -10,8 +10,6 @@ drop table if exists FILMS_DIRECTOR;
 
 drop table if exists DIRECTORS;
 
-drop table if exists FILMS_DIRECTOR;
-
 drop table if exists REVIEW_LIKES;
 
 drop table if exists REVIEWS;
@@ -25,7 +23,6 @@ drop table if exists MPA;
 drop table if exists MPA_DEFAULT;
 
 drop table if exists USERS;
-
 
 
 CREATE TABLE IF NOT EXISTS genre_names
