@@ -23,7 +23,7 @@ import java.util.Objects;
 @Component("ReviewsDbStorage")
 public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
 
-    public ReviewsDbStorage (JdbcTemplate jdbcTemplate) {
+    public ReviewsDbStorage(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate);
     }
 
@@ -50,7 +50,7 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
     }
 
     @Override
-    public Reviews updateReview (Reviews reviews)
+    public Reviews updateReview(Reviews reviews)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
         checkUserAndFilm(reviews);
         Integer reviewId = reviews.getReviewId();
@@ -78,11 +78,11 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
 
     @Override
     public List<Reviews> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
-        if(id == null) {
+        if (id == null) {
             return jdbcTemplate.query(ReviewsQueries.GET_REVIEW_WITHOUT_FILM_ID, this::mapRowToReview, count);
         } else {
             SqlRowSet filmRows = jdbcTemplate.queryForRowSet(FilmQueries.GET_FILM_BY_ID, id);
-            if(filmRows.next()) {
+            if (filmRows.next()) {
                 return jdbcTemplate.query(ReviewsQueries.GET_REVIEW_BY_FILM_ID, this::mapRowToReview, id, count);
             } else {
                 throw new FilmNotFoundException("Фильм с id = " + id + " не найден.");
@@ -131,7 +131,8 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
     }
 
 
-    private void checkReviewAndUser(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException {
+    private void checkReviewAndUser(Integer reviewId, Integer userId)
+            throws ReviewNotFoundException, UserNotFoundException {
         if (reviewId == null || !contains(reviewId)) {
             throw new ReviewNotFoundException("Отзыв с id = " + reviewId + " не найден.");
         }
@@ -140,7 +141,8 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
             throw new UserNotFoundException("Пользователь с id = " + userId + " не найден.");
         }
     }
-    private void checkReviewAndUsersLike(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException {
+    private void checkReviewAndUsersLike(Integer reviewId, Integer userId)
+            throws ReviewNotFoundException, UserNotFoundException {
         if (reviewId == null || !contains(reviewId)) {
             throw new ReviewNotFoundException("Отзыв с id = " + reviewId + " не найден.");
         }

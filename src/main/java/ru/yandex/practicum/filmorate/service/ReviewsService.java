@@ -21,28 +21,28 @@ public class ReviewsService {
         this.reviewsStorage = reviewsStorage;
     }
 
-    public Reviews postReview (Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
+    public Reviews postReview(Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
         return reviewsStorage.postReview(reviews);
     };
 
-    public Reviews updateReview (Reviews reviews)
+    public Reviews updateReview(Reviews reviews)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
         return reviewsStorage.updateReview(reviews);
     };
 
-    public void deleteReview (Integer id) throws ReviewNotFoundException {
+    public void deleteReview(Integer id) throws ReviewNotFoundException {
         reviewsStorage.deleteReview(id);
     };
 
-    public Reviews getReviewById (Integer id) throws ReviewNotFoundException {
+    public Reviews getReviewById(Integer id) throws ReviewNotFoundException {
         return reviewsStorage.getReviewById(id);
     }
 
-    public List<Reviews> getReviewsByFilmId (Integer id, Integer count) throws FilmNotFoundException {
+    public List<Reviews> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
         return reviewsStorage.getReviewsByFilmId(id, count);
     };
 
-    public void addLike(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException{
+    public void addLike(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException {
         reviewsStorage.addLike(reviewId, userId);
     };
 
