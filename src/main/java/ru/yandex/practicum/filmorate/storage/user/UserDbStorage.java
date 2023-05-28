@@ -23,6 +23,7 @@ import java.util.*;
 @Component("UserDbStorage")
 public class UserDbStorage extends DbStorage implements UserStorage {
     private enum Status { pending, confirmed }
+
     private final FeedStorage feedStorage;
 
     @Autowired
@@ -133,12 +134,13 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         return jdbcTemplate.query(UserQueries.GET_RECOMMENDATIONS,
                 (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId);
     }
-        public List<Feed> getFeed (Integer userId) throws UserNotFoundException {
-            if (userId == null || !contains(userId)) {
-                throw new UserNotFoundException("User " + userId + " not found");
-            }
-            return feedStorage.getFeed(userId);
+
+    public List<Feed> getFeed (Integer userId) throws UserNotFoundException {
+        if (userId == null || !contains(userId)) {
+            throw new UserNotFoundException("User " + userId + " not found");
         }
+        return feedStorage.getFeed(userId);
+    }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
         User user = new User();
