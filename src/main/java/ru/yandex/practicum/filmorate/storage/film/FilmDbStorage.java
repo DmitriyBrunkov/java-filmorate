@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.director.queries.DirectorQueries;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.queries.FilmQueries;
 import ru.yandex.practicum.filmorate.storage.genre.queries.GenreQueries;
 
@@ -23,12 +25,15 @@ import java.util.*;
 
 @Component("FilmDbStorage")
 public class FilmDbStorage extends DbStorage implements FilmStorage {
+    private final FeedStorage feedStorage;
 
     private Set<Genre> genres = new TreeSet<>();
     private Set<Director> directors = new HashSet<>();
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, FeedStorage feedStorage) {
         super(jdbcTemplate);
+        this.feedStorage = feedStorage;
     }
 
     @Override
@@ -114,11 +119,14 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         }
     }
 
+
+    // Отсутствует проверка на пользователя, то есть его может и не быть, а вот фильм проверяется
     @Override
     public void addLike(Integer filmId, Integer userId) throws FilmValidationException {
         if (filmId == null || !contains(filmId)) {
             throw new FilmValidationException("ID: " + filmId + " doesn't exist");
         }
+        feedStorage.addFeed(userId, filmId, "LIKE", "ADD");
         jdbcTemplate.update(FilmQueries.ADD_LIKE, filmId, userId);
     }
 
@@ -131,6 +139,7 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         if (!userRows.next()) {
             throw new UserNotFoundException("User ID: " + userId + " doesn't exist");
         }
+        feedStorage.addFeed(userId, filmId, "LIKE", "REMOVE");
         jdbcTemplate.update(FilmQueries.DELETE_LIKE, filmId, userId);
     }
 

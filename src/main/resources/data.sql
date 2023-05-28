@@ -40,3 +40,7 @@ on source.genre_id = target.GENRE_ID
 when not matched then
     insert (GENRE_ID, NAME)
     values (source.genre_id, source.name);
+
+drop table if exists mpa_default;
+
+drop table if exists genre_names_default;

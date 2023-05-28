@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface UserStorage {
     Collection<User> getAll();
@@ -24,4 +26,6 @@ public interface UserStorage {
     void deleteUserById(Integer userId);
 
     Collection<Integer> getRecommendationsId(Integer userId) throws UserValidationException;
+
+    List<Feed> getFeed(Integer userId) throws UserNotFoundException;
 }
