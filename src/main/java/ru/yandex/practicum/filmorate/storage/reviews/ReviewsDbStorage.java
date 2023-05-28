@@ -60,9 +60,9 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
         checkUserAndFilm(review);
         Integer reviewId = review.getReviewId();
-        jdbcTemplate.update(ReviewsQueries.UPDATE_REVIEW,
-                review.getContent(), review.getIsPositive(), reviewId);
-        feedStorage.addFeed(review.getUserId(), review.getReviewId(), "REVIEW", "UPDATE");
+        Review oldReview = getReviewById(reviewId);
+        jdbcTemplate.update(ReviewsQueries.UPDATE_REVIEW, review.getContent(), review.getIsPositive(), reviewId);
+        feedStorage.addFeed(oldReview.getUserId(), review.getReviewId(), "REVIEW", "UPDATE");
         return getReviewById(reviewId);
     }
 
