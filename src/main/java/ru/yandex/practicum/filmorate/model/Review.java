@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Reviews {
+public class Review {
     private Integer reviewId;
     @NotBlank(message = "Отзыв не может быть пустым")
     @Size(max = 500, message = "Отзыв не может содержать более 500 символов")

@@ -3,20 +3,20 @@ package ru.yandex.practicum.filmorate.storage.reviews;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;
 
 public interface ReviewsStorage {
-    Reviews postReview(Reviews reviews) throws UserNotFoundException, FilmNotFoundException;
+    Review postReview(Review review) throws UserNotFoundException, FilmNotFoundException;
 
-    Reviews updateReview(Reviews reviews) throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException;
+    Review updateReview(Review review) throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException;
 
     void deleteReview(Integer id) throws ReviewNotFoundException;
 
-    Reviews getReviewById(Integer id) throws ReviewNotFoundException;
+    Review getReviewById(Integer id) throws ReviewNotFoundException;
 
-    List<Reviews> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException;
+    List<Review> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException;
 
     void addLike(Integer reviewId, Integer userId) throws ReviewNotFoundException, UserNotFoundException;
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewsService;
 
 import javax.validation.Valid;
@@ -25,16 +25,16 @@ public class ReviewsController {
     }
 
     @PostMapping
-    public Reviews postReview(@Valid @RequestBody Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
-        log.info("Добавлен отзыв с id = {}", reviews.getReviewId());
-        return reviewsService.postReview(reviews);
+    public Review postReview(@Valid @RequestBody Review review) throws UserNotFoundException, FilmNotFoundException {
+        log.info("Добавлен отзыв с id = {}", review.getReviewId());
+        return reviewsService.postReview(review);
     }
 
     @PutMapping
-    public Reviews updateReview(@Valid @RequestBody Reviews reviews)
+    public Review updateReview(@Valid @RequestBody Review review)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
-        log.info("Отзыв с id = {} обновлен", reviews.getReviewId());
-        return reviewsService.updateReview(reviews);
+        log.info("Отзыв с id = {} обновлен", review.getReviewId());
+        return reviewsService.updateReview(review);
     }
 
     @DeleteMapping("/{id}")
@@ -44,13 +44,13 @@ public class ReviewsController {
     }
 
     @GetMapping("/{id}")
-    public Reviews getReviewById(@PathVariable Integer id) throws ReviewNotFoundException {
+    public Review getReviewById(@PathVariable Integer id) throws ReviewNotFoundException {
         log.info("Отзыв с id = {} получен", id);
         return reviewsService.getReviewById(id);
     }
 
     @GetMapping
-    public List<Reviews> getReviewsByFilmId(
+    public List<Review> getReviewsByFilmId(
             @RequestParam(value = "filmId", required = false) Integer filmId,
             @RequestParam(value = "count", defaultValue = "10") Integer count) throws FilmNotFoundException {
         if (filmId != null) {

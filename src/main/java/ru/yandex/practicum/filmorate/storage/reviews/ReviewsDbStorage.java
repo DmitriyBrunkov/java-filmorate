@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.film.queries.FilmQueries;
 import ru.yandex.practicum.filmorate.storage.reviews.queries.ReviewsQueries;
@@ -28,34 +28,34 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
     }
 
     @Override
-    public Reviews postReview(Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
-        checkUserAndFilm(reviews);
+    public Review postReview(Review review) throws UserNotFoundException, FilmNotFoundException {
+        checkUserAndFilm(review);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(ReviewsQueries.ADD_REVIEW, new String[]{"review_id"});
-            ps.setString(1, reviews.getContent());
-            ps.setBoolean(2, reviews.getIsPositive());
-            ps.setInt(3, reviews.getUserId());
-            ps.setInt(4, reviews.getFilmId());
-            if (reviews.getUseful() == null) {
+            ps.setString(1, review.getContent());
+            ps.setBoolean(2, review.getIsPositive());
+            ps.setInt(3, review.getUserId());
+            ps.setInt(4, review.getFilmId());
+            if (review.getUseful() == null) {
                 ps.setInt(5, 0);
             } else {
-                ps.setInt(5, reviews.getUseful());
+                ps.setInt(5, review.getUseful());
             }
             return ps;
         }, keyHolder);
-        reviews.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        return reviews;
+        review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        return review;
     }
 
     @Override
-    public Reviews updateReview(Reviews reviews)
+    public Review updateReview(Review review)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
-        checkUserAndFilm(reviews);
-        Integer reviewId = reviews.getReviewId();
+        checkUserAndFilm(review);
+        Integer reviewId = review.getReviewId();
         jdbcTemplate.update(ReviewsQueries.UPDATE_REVIEW,
-                reviews.getContent(), reviews.getIsPositive(), reviewId);
+                review.getContent(), review.getIsPositive(), reviewId);
         return getReviewById(reviewId);
     }
 
@@ -68,7 +68,7 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
     }
 
     @Override
-    public Reviews getReviewById(Integer id) throws ReviewNotFoundException {
+    public Review getReviewById(Integer id) throws ReviewNotFoundException {
         if (!contains(id)) {
             throw new ReviewNotFoundException("Отзыв с id = " + id + " не найден.");
         }
@@ -77,7 +77,7 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
     }
 
     @Override
-    public List<Reviews> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
+    public List<Review> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
         if (id == null) {
             return jdbcTemplate.query(ReviewsQueries.GET_REVIEW_WITHOUT_FILM_ID, this::mapRowToReview, count);
         } else {
@@ -114,15 +114,15 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
         jdbcTemplate.update(ReviewsQueries.DELETE_LIKE_OR_DISLIKE, reviewId, userId, Usefulness.USEFUL.getValue());
     }
 
-    private Reviews mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {
-        Reviews reviews = new Reviews();
-        reviews.setReviewId(resultSet.getInt("review_id"));
-        reviews.setContent(resultSet.getString("content"));
-        reviews.setIsPositive(resultSet.getBoolean("is_positive"));
-        reviews.setUserId(resultSet.getInt("user_id"));
-        reviews.setFilmId(resultSet.getInt("film_id"));
-        reviews.setUseful(resultSet.getInt("useful"));
-        return reviews;
+    private Review mapRowToReview(ResultSet resultSet, int rowNum) throws SQLException {
+        Review review = new Review();
+        review.setReviewId(resultSet.getInt("review_id"));
+        review.setContent(resultSet.getString("content"));
+        review.setIsPositive(resultSet.getBoolean("is_positive"));
+        review.setUserId(resultSet.getInt("user_id"));
+        review.setFilmId(resultSet.getInt("film_id"));
+        review.setUseful(resultSet.getInt("useful"));
+        return review;
     }
 
     private boolean contains(Integer id) {
@@ -153,9 +153,9 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
         }
     }
 
-    private void checkUserAndFilm(Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
-        Integer userId = reviews.getUserId();
-        Integer filmId = reviews.getFilmId();
+    private void checkUserAndFilm(Review review) throws UserNotFoundException, FilmNotFoundException {
+        Integer userId = review.getUserId();
+        Integer filmId = review.getFilmId();
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(UserQueries.GET_USER_BY_ID, userId);
         if (!userRows.next()) {
             throw new UserNotFoundException("Пользователь с id = " + userId + " не найден.");

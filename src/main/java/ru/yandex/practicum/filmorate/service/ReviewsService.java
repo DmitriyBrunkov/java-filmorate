@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.reviews.ReviewsStorage;
 
 import java.util.List;
@@ -21,24 +21,24 @@ public class ReviewsService {
         this.reviewsStorage = reviewsStorage;
     }
 
-    public Reviews postReview(Reviews reviews) throws UserNotFoundException, FilmNotFoundException {
-        return reviewsStorage.postReview(reviews);
+    public Review postReview(Review review) throws UserNotFoundException, FilmNotFoundException {
+        return reviewsStorage.postReview(review);
     }
 
-    public Reviews updateReview(Reviews reviews)
+    public Review updateReview(Review review)
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
-        return reviewsStorage.updateReview(reviews);
+        return reviewsStorage.updateReview(review);
     }
 
     public void deleteReview(Integer id) throws ReviewNotFoundException {
         reviewsStorage.deleteReview(id);
     }
 
-    public Reviews getReviewById(Integer id) throws ReviewNotFoundException {
+    public Review getReviewById(Integer id) throws ReviewNotFoundException {
         return reviewsStorage.getReviewById(id);
     }
 
-    public List<Reviews> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
+    public List<Review> getReviewsByFilmId(Integer id, Integer count) throws FilmNotFoundException {
         return reviewsStorage.getReviewsByFilmId(id, count);
     }
 
