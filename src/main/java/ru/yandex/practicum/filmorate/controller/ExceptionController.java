@@ -67,4 +67,11 @@ public class ExceptionController {
         log.info("Exception {} with message: {}", e.getClass(), e.getMessage());
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleReviewNotFound(final ReviewNotFoundException e) {
+        log.info("Exception {} with message: {}", e.getClass(), e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
 }
