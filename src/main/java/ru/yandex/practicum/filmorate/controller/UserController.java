@@ -6,11 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Feed;
+
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -78,5 +81,10 @@ public class UserController {
     @DeleteMapping("{id}")
     public void deleteUserById(@PathVariable("id") Integer userId) {
         userService.deleteUserById(userId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Feed> getFeed(@PathVariable("id") Integer userId) throws UserNotFoundException {
+        return userService.getFeed(userId);
     }
 }

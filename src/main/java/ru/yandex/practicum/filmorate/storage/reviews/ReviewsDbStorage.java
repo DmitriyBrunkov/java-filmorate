@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.reviews;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -10,6 +11,7 @@ import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.queries.FilmQueries;
 import ru.yandex.practicum.filmorate.storage.reviews.queries.ReviewsQueries;
 import ru.yandex.practicum.filmorate.storage.user.queries.UserQueries;
@@ -22,9 +24,12 @@ import java.util.Objects;
 
 @Component("ReviewsDbStorage")
 public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
+    private final FeedStorage feedStorage;
 
-    public ReviewsDbStorage(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public ReviewsDbStorage(JdbcTemplate jdbcTemplate, FeedStorage feedStorage) {
         super(jdbcTemplate);
+        this.feedStorage = feedStorage;
     }
 
     @Override
@@ -46,6 +51,7 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
             return ps;
         }, keyHolder);
         review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        feedStorage.addFeed(review.getUserId(), review.getReviewId(), "REVIEW", "ADD");
         return review;
     }
 
@@ -54,8 +60,9 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
             throws ReviewNotFoundException, UserNotFoundException, FilmNotFoundException {
         checkUserAndFilm(review);
         Integer reviewId = review.getReviewId();
-        jdbcTemplate.update(ReviewsQueries.UPDATE_REVIEW,
-                review.getContent(), review.getIsPositive(), reviewId);
+        Review oldReview = getReviewById(reviewId);
+        jdbcTemplate.update(ReviewsQueries.UPDATE_REVIEW, review.getContent(), review.getIsPositive(), reviewId);
+        feedStorage.addFeed(oldReview.getUserId(), review.getReviewId(), "REVIEW", "UPDATE");
         return getReviewById(reviewId);
     }
 
@@ -64,6 +71,8 @@ public class ReviewsDbStorage extends DbStorage implements ReviewsStorage {
         if (!contains(id)) {
             throw new ReviewNotFoundException("Отзыв с id = " + id + " не найден.");
         }
+        Review review = getReviewById(id);
+        feedStorage.addFeed(review.getUserId(), review.getReviewId(), "REVIEW", "REMOVE");
         jdbcTemplate.update(ReviewsQueries.DELETE_REVIEW, id);
     }
 

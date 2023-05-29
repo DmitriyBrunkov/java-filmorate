@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -7,24 +8,28 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.user.queries.UserQueries;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 @Component("UserDbStorage")
 public class UserDbStorage extends DbStorage implements UserStorage {
     private enum Status { pending, confirmed }
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    private final FeedStorage feedStorage;
+
+    @Autowired
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FeedStorage feedStorage) {
         super(jdbcTemplate);
+        this.feedStorage = feedStorage;
     }
 
     @Override
@@ -68,6 +73,7 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         if (friendId == null || !contains(friendId)) {
             throw new UserNotFoundException("User " + friendId + " not found");
         }
+        feedStorage.addFeed(userId, friendId, "FRIEND", "ADD");
         SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(UserQueries.GET_USERS_FRIENDSHIP_STATUS, friendId, userId);
         if (friendsRows.next()) {
             if (friendsRows.getString("status").equals(Status.pending.name())) {
@@ -79,7 +85,6 @@ public class UserDbStorage extends DbStorage implements UserStorage {
                 jdbcTemplate.update(UserQueries.ADD_FRIEND, userId, friendId, Status.pending.name());
             }
         }
-
     }
 
     @Override
@@ -90,6 +95,7 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         if (friendId == null || !contains(friendId)) {
             throw new UserValidationException("User " + friendId + " not found");
         }
+        feedStorage.addFeed(userId, friendId, "FRIEND", "REMOVE");
         jdbcTemplate.update(UserQueries.DELETE_FRIEND, userId, friendId);
     }
 
@@ -98,7 +104,8 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         if (id == null || !contains(id)) {
             throw new UserNotFoundException("User " + id + " not found");
         }
-        return jdbcTemplate.query(UserQueries.GET_USER_FRIENDS, (resultSet, rowNum) -> resultSet.getInt("friend_id"), id, id);
+        return jdbcTemplate.query(UserQueries.GET_USER_FRIENDS,
+                (resultSet, rowNum) -> resultSet.getInt("friend_id"), id, id);
     }
 
     @Override
@@ -106,7 +113,12 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         if (user.getId() == null || !contains(user.getId())) {
             throw new UserNotFoundException("ID: " + user.getId() + " doesn't exist");
         }
-        jdbcTemplate.update(UserQueries.UPDATE_USER, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday(), user.getId());
+        jdbcTemplate.update(UserQueries.UPDATE_USER,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
+                user.getId());
     }
 
     @Override
@@ -119,7 +131,15 @@ public class UserDbStorage extends DbStorage implements UserStorage {
         if (userId == null || !contains(userId)) {
             throw new UserValidationException("User " + userId + " not found");
         }
-        return jdbcTemplate.query(UserQueries.GET_RECOMMENDATIONS, (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId);
+        return jdbcTemplate.query(UserQueries.GET_RECOMMENDATIONS,
+                (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId);
+    }
+
+    public List<Feed> getFeed(Integer userId) throws UserNotFoundException {
+        if (userId == null || !contains(userId)) {
+            throw new UserNotFoundException("User " + userId + " not found");
+        }
+        return feedStorage.getFeed(userId);
     }
 
     private User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
