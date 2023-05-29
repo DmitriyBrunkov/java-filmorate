@@ -21,7 +21,7 @@ public class FeedDbStorage extends DbStorage implements FeedStorage {
     @Override
     public List<Feed> getFeed(Integer userId) {
         return jdbcTemplate.query(FeedQueries.GET_FEED, this::mapRowToFeed).stream()
-                .filter(userId != null ? feed -> feed.getUserId() == userId : feed -> true)
+                .filter(userId != null ? feed -> feed.getUserId().equals(userId) : feed -> true)
                 .collect(Collectors.toList());
     }
 
