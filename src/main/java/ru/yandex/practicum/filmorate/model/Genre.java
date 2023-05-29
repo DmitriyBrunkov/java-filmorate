@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Data
 public class Genre implements Comparable<Genre> {
     private Integer id;
+    @Size(max = 255)
     private String name;
 
     @Override

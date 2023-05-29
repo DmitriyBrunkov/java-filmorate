@@ -16,6 +16,7 @@ public class Film {
     public static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, 12, 28);
     private Integer id;
     @NotBlank
+    @Size(max = 255)
     private String name;
     @Size(max = 200)
     private String description;
