@@ -71,7 +71,7 @@ public class UserService {
     }
 
     public Collection<Film> getRecommendations(Integer userId) throws UserValidationException {
-        return filmStorage.getAll(userStorage.getRecommendationsId(userId));
+        return userStorage.getRecommendations(userId);
     }
 
     public List<Feed> getFeed(Integer userId) throws UserNotFoundException {

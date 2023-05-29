@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.exception.NotImplException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -83,8 +84,8 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<Integer> getRecommendationsId(Integer userId) {
-        return null;
+    public Collection<Film> getRecommendations(Integer userId) {
+        throw new NotImplException("InMemoryUserStorage: getRecommendations() not implemented");
     }
 
     public List<Feed> getFeed(Integer userId) {
