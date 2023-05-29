@@ -141,6 +141,7 @@ public class UserDbStorage extends DbStorage implements UserStorage {
                 (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId));
     }
 
+    @Override
     public List<Feed> getFeed(Integer userId) throws UserNotFoundException {
         if (userId == null || !contains(userId)) {
             throw new UserNotFoundException("User " + userId + " not found");

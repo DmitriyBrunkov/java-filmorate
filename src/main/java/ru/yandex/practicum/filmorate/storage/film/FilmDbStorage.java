@@ -119,7 +119,6 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
         }
     }
 
-
     // Отсутствует проверка на пользователя, то есть его может и не быть, а вот фильм проверяется
     @Override
     public void addLike(Integer filmId, Integer userId) throws FilmValidationException {

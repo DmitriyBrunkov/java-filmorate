@@ -92,7 +92,6 @@ public class InMemoryUserStorage implements UserStorage {
         throw new NotImplException("InMemoryUserStorage: getFeed() not implemented");
     }
 
-    //@Override
     private boolean contains(Integer id) {
         return users.containsKey(id);
     }
