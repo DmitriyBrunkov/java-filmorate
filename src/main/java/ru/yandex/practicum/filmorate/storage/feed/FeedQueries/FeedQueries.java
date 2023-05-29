@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.feed.FeedQuries;
+package ru.yandex.practicum.filmorate.storage.feed.FeedQueries;
 
 public final class FeedQueries {
     public static final String GET_FEED = "select EVENT_ID, USER_ID, ENTITY_ID, TIME_STAMP, EVENT_TYPE, OPERATION " +

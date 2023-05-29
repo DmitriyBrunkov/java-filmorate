@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
-import ru.yandex.practicum.filmorate.storage.feed.FeedQuries.FeedQueries;
+import ru.yandex.practicum.filmorate.storage.feed.FeedQueries.FeedQueries;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
