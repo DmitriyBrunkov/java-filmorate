@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film.queries;
 
 public final class FilmQueries {
+
+    private FilmQueries() {
+    }
+
     public static final String GET_ALL_FILMS = "select FILMS.film_id, FILMS.name, FILMS.description, FILMS.release_date,"
             + " FILMS.duration, FILMS.mpa_id, MPA.mpa_id, MPA.name from films left outer join mpa on films.mpa_id = mpa.mpa_id";
     public static final String GET_FILMS_BY_LIST = "select FILMS.film_id, FILMS.name, FILMS.description, FILMS.release_date,"

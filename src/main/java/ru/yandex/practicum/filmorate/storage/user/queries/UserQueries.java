@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.user.queries;
 
 public final class UserQueries {
+
+    private UserQueries() {
+    }
+
     public static final String GET_ALL_USERS = "select USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY from users";
     public static final String GET_USER_BY_ID = "select USER_ID, EMAIL, LOGIN, NAME, BIRTHDAY from users where user_id = ?";
     public static final String GET_USER_FRIENDS = "select FRIEND_ID from FRIENDS where USER_ID = ? " +

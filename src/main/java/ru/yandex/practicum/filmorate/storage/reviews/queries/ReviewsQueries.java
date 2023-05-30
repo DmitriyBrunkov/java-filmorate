@@ -1,6 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.reviews.queries;
 
 public final class ReviewsQueries {
+
+    private ReviewsQueries() {
+    }
+
     public static final String ADD_REVIEW =
             "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ?, ?, ?)";
     public static final String UPDATE_REVIEW =
