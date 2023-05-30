@@ -126,7 +126,10 @@ public class FilmDbStorage extends DbStorage implements FilmStorage {
             throw new FilmValidationException("ID: " + filmId + " doesn't exist");
         }
         feedStorage.addFeed(userId, filmId, "LIKE", "ADD");
-        jdbcTemplate.update(FilmQueries.ADD_LIKE, filmId, userId);
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet(FilmQueries.CHECK_LIKE, filmId, userId);
+        if (!userRows.next()) {
+            jdbcTemplate.update(FilmQueries.ADD_LIKE, filmId, userId);
+        }
     }
 
     @Override
