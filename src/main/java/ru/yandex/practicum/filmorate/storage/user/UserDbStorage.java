@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
 import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.queries.UserQueries;
 
 import java.sql.Date;
@@ -24,11 +27,14 @@ import java.util.*;
 public class UserDbStorage extends DbStorage implements UserStorage {
     private enum Status { pending, confirmed }
 
+    private final FilmStorage filmStorage;
     private final FeedStorage feedStorage;
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FeedStorage feedStorage) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, @Qualifier("FilmDbStorage") FilmStorage filmStorage,
+                         FeedStorage feedStorage) {
         super(jdbcTemplate);
+        this.filmStorage = filmStorage;
         this.feedStorage = feedStorage;
     }
 
@@ -127,14 +133,15 @@ public class UserDbStorage extends DbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<Integer> getRecommendationsId(Integer userId) throws UserValidationException {
+    public Collection<Film> getRecommendations(Integer userId) throws UserValidationException {
         if (userId == null || !contains(userId)) {
             throw new UserValidationException("User " + userId + " not found");
         }
-        return jdbcTemplate.query(UserQueries.GET_RECOMMENDATIONS,
-                (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId);
+        return filmStorage.getAll(jdbcTemplate.query(UserQueries.GET_RECOMMENDATIONS,
+                (resultSet, rowNum) -> resultSet.getInt("film_id"), userId, userId, userId));
     }
 
+    @Override
     public List<Feed> getFeed(Integer userId) throws UserNotFoundException {
         if (userId == null || !contains(userId)) {
             throw new UserNotFoundException("User " + userId + " not found");

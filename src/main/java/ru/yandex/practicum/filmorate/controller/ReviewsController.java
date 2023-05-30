@@ -86,7 +86,8 @@ public class ReviewsController {
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
-    public void deleteDislike(Integer reviewId, Integer userId) throws UserNotFoundException, ReviewNotFoundException {
+    public void deleteDislike(@PathVariable(value = "id") Integer reviewId,
+                              @PathVariable(value = "userId") Integer userId) throws UserNotFoundException, ReviewNotFoundException {
         log.info("Удален дизлайк к ревью с id = {}.", reviewId);
         reviewsService.deleteDislike(reviewId, userId);
     }

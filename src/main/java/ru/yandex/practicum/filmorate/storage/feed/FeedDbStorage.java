@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.storage.dbStorage.DbStorage;
-import ru.yandex.practicum.filmorate.storage.feed.FeedQuries.FeedQueries;
+import ru.yandex.practicum.filmorate.storage.feed.FeedQueries.FeedQueries;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +21,7 @@ public class FeedDbStorage extends DbStorage implements FeedStorage {
     @Override
     public List<Feed> getFeed(Integer userId) {
         return jdbcTemplate.query(FeedQueries.GET_FEED, this::mapRowToFeed).stream()
-                .filter(userId != null ? feed -> feed.getUserId() == userId : feed -> true)
+                .filter(userId != null ? feed -> feed.getUserId().equals(userId) : feed -> true)
                 .collect(Collectors.toList());
     }
 
