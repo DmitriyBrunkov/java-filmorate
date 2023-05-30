@@ -70,7 +70,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy){
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) {
         throw new NotImplException("InMemoryFilmStorage: getFilmsDirectorSorted() not implemented");
     }
 
