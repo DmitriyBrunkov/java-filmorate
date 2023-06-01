@@ -5,11 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Feed;
+
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -55,6 +59,11 @@ public class UserController {
         return userService.commonFriends(userId, otherUserId);
     }
 
+    @GetMapping("/{id}/recommendations")
+    public Collection<Film> getRecommendations(@PathVariable("id") Integer userId) throws UserValidationException {
+        return userService.getRecommendations(userId);
+    }
+
     @PostMapping
     public User add(@Valid @RequestBody User user) {
         userService.add(user);
@@ -67,5 +76,15 @@ public class UserController {
         userService.update(user);
         log.info("Updated user: {}", user);
         return user;
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteUserById(@PathVariable("id") Integer userId) {
+        userService.deleteUserById(userId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Feed> getFeed(@PathVariable("id") Integer userId) throws UserNotFoundException {
+        return userService.getFeed(userId);
     }
 }

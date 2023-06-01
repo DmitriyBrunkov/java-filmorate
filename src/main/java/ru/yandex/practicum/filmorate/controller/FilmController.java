@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -61,7 +59,27 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count, @RequestParam(required = false) Integer genreId, @RequestParam(required = false) Integer year) {
+        return filmService.getPopularFilms(count, genreId, year);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonUserFriendFilms(@RequestParam int userId, @RequestParam int friendId) {
+        return filmService.getCommonUserFriendFilms(userId, friendId);
+    }
+
+    @GetMapping("director/{directorId}")
+    public List<Film> getDirectorSortedFilms(@PathVariable Integer directorId, @RequestParam String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+        return filmService.getFilmsDirectorSorted(directorId, sortBy);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteFilm(@PathVariable("id") int filmId) {
+        filmService.deleteFilm(filmId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> search(@RequestParam(defaultValue = "") String query, @RequestParam(defaultValue = "") String by) {
+        return filmService.searchBy(query, by);
     }
 }

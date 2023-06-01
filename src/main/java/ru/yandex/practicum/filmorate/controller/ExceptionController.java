@@ -53,4 +53,25 @@ public class ExceptionController {
         log.info("Exception {} with message: {}", e.getClass(), e.getMessage());
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleDirectorNotFound(final DirectorNotFoundException e) {
+        log.info("Exception {} with message: {}", e.getClass(), e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInvalidParameterException(final InvalidParameterException e) {
+        log.info("Exception {} with message: {}", e.getClass(), e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleReviewNotFound(final ReviewNotFoundException e) {
+        log.info("Exception {} with message: {}", e.getClass(), e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
 }

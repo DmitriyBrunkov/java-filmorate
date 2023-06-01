@@ -16,6 +16,7 @@ public class Film {
     public static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, 12, 28);
     private Integer id;
     @NotBlank
+    @Size(max = 255)
     private String name;
     @Size(max = 200)
     private String description;
@@ -26,4 +27,5 @@ public class Film {
     private Mpa mpa;
     private Set<Integer> likes = new HashSet<>();
     private Set<Genre> genres = new TreeSet<>();
+    private Set<Director> directors = new HashSet<>();
 }

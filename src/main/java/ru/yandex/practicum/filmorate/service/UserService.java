@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -37,12 +39,10 @@ public class UserService {
 
     public void addFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException {
         userStorage.addFriend(userId, friendId);
-        userStorage.addFriend(friendId, userId);
     }
 
     public void deleteFriend(Integer userId, Integer friendId) throws UserValidationException, UserNotFoundException {
         userStorage.deleteFriend(userId, friendId);
-        userStorage.deleteFriend(friendId, userId);
     }
 
     public Collection<User> getFriends(Integer id) throws UserValidationException, UserNotFoundException {
@@ -61,5 +61,17 @@ public class UserService {
             result.add(userStorage.get(id));
         }
         return result;
+    }
+
+    public void deleteUserById(Integer userId) {
+        userStorage.deleteUserById(userId);
+    }
+
+    public Collection<Film> getRecommendations(Integer userId) throws UserValidationException {
+        return userStorage.getRecommendations(userId);
+    }
+
+    public List<Feed> getFeed(Integer userId) throws UserNotFoundException {
+        return userStorage.getFeed(userId);
     }
 }

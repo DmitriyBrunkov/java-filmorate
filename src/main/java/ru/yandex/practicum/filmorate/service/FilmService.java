@@ -3,10 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -47,10 +46,36 @@ public class FilmService {
         filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getPopularFilms(Integer count) {
+    public List<Film> getPopularFilms(Integer count, Integer genreId, Integer year) {
+        Genre requestGenre = new Genre();
+        requestGenre.setId(genreId);
         return filmStorage.getAll().stream()
+                .filter(genreId != null ? film -> film.getGenres().contains(requestGenre) : film -> true)
+                .filter(year != null ? film -> film.getReleaseDate().getYear() == year : film -> true)
                 .sorted(this::compare)
                 .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    public List<Film> getCommonUserFriendFilms(int userId, int friendId) {
+        return filmStorage.getAll().stream()
+                .filter(film -> film.getLikes().contains(userId))
+                .filter(film -> film.getLikes().contains(friendId))
+                .sorted(this::compare)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteFilm(Integer filmId) {
+        filmStorage.deleteFilm(filmId);
+    }
+
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) throws DirectorNotFoundException, InvalidParameterException {
+        return filmStorage.getFilmsDirectorSorted(directorId, sortBy);
+    }
+
+    public List<Film> searchBy(String query, String by) {
+        return filmStorage.searchBy(query, by).stream()
+                .sorted(this::compare)
                 .collect(Collectors.toList());
     }
 

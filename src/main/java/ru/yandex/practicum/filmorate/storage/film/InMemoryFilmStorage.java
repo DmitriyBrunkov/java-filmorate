@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
 @Component("InMemoryFilmStorage")
@@ -18,6 +18,15 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Collection<Film> getAll() {
         return films.values();
+    }
+
+    @Override
+    public Collection<Film> getAll(Collection<Integer> filmsList) {
+        Collection<Film> result = new HashSet<>();
+        for (Integer filmId : filmsList) {
+            result.add(films.get(filmId));
+        }
+        return result;
     }
 
     @Override
@@ -58,6 +67,21 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new UserNotFoundException("User ID: " + userId + " doesn't exist");
         }
         films.get(filmId).getLikes().remove(userId);
+    }
+
+    @Override
+    public List<Film> getFilmsDirectorSorted(Integer directorId, String sortBy) {
+        throw new NotImplException("InMemoryFilmStorage: getFilmsDirectorSorted() not implemented");
+    }
+
+    @Override
+    public void deleteFilm(Integer filmId) {
+        films.remove(filmId);
+    }
+
+    @Override
+    public List<Film> searchBy(String query, String by) {
+        throw new NotImplException("InMemoryFilmStorage: searchBy() not implemented");
     }
 
     private int generateId() {

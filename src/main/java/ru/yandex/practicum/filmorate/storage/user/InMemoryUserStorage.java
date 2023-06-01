@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotImplException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component("InMemoryUserStorage")
@@ -59,9 +63,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<Integer> getFriends(Integer id) throws UserValidationException {
+    public Collection<Integer> getFriends(Integer id) throws UserNotFoundException {
         if (id == null || !contains(id)) {
-            throw new UserValidationException("User " + id + " not found");
+            throw new UserNotFoundException("User " + id + " not found");
         }
         return users.get(id).getFriends();
     }
@@ -74,7 +78,20 @@ public class InMemoryUserStorage implements UserStorage {
         users.put(user.getId(), user);
     }
 
-    //@Override
+    @Override
+    public void deleteUserById(Integer userId) {
+        users.remove(userId);
+    }
+
+    @Override
+    public Collection<Film> getRecommendations(Integer userId) {
+        throw new NotImplException("InMemoryUserStorage: getRecommendations() not implemented");
+    }
+
+    public List<Feed> getFeed(Integer userId) {
+        throw new NotImplException("InMemoryUserStorage: getFeed() not implemented");
+    }
+
     private boolean contains(Integer id) {
         return users.containsKey(id);
     }
